@@ -128,23 +128,41 @@ final class Queue {
 	}
 
 	/**
-	 * Adds a row to the queue.
+	 * Adds one message to the queue: one row per recipient.
 	 *
-	 * @param array  $row     Log columns.
-	 * @param string $payload Encoded payload.
-	 * @param int    $when    When to send (unix time).
-	 * @return int Row id, 0 on failure.
+	 * The first row leads: it carries the payload and the schedule, and the
+	 * queue sends it. The others carry neither; they share its `mail_id` and
+	 * take its outcome.
+	 *
+	 * @param array[] $rows    Log columns per recipient, all with the same mail_id.
+	 * @param string  $payload Encoded payload.
+	 * @param int     $when    When to send (unix time).
+	 * @return int Lead row id, 0 on failure.
 	 */
-	public static function enqueue( array $row, $payload, $when ) {
-		$row['status']          = Log::STATUS_QUEUED;
-		$row['payload']         = $payload;
-		$row['next_attempt_at'] = gmdate( 'Y-m-d H:i:s', (int) $when );
+	public static function enqueue( array $rows, $payload, $when ) {
+		$rows = array_values( $rows );
 
-		$id = Log::insert( $row );
-
-		if ( $id ) {
-			self::schedule( $when );
+		if ( empty( $rows ) ) {
+			return 0;
 		}
+
+		$lead                    = $rows[0];
+		$lead['status']          = Log::STATUS_QUEUED;
+		$lead['payload']         = $payload;
+		$lead['next_attempt_at'] = gmdate( 'Y-m-d H:i:s', (int) $when );
+
+		$id = Log::insert( $lead );
+
+		if ( ! $id ) {
+			return 0;
+		}
+
+		foreach ( array_slice( $rows, 1 ) as $row ) {
+			$row['status'] = Log::STATUS_QUEUED;
+			Log::insert( $row );
+		}
+
+		self::schedule( $when );
 
 		return $id;
 	}
@@ -273,9 +291,10 @@ final class Queue {
 		$class    = $response->retry_class();
 
 		if ( $response->is_success() ) {
-			$columns = Dispatcher::success_columns( $response ) + array( 'attempts' => $attempts );
+			$columns    = Dispatcher::success_columns( $response ) + array( 'attempts' => $attempts );
+			$recipients = 1 + count( Log::followers( (string) $row['mail_id'], $id ) );
 
-			Account::note_sent( $columns['mode'] );
+			Account::note_sent( $columns['mode'], $recipients );
 			self::finish( $id, $columns );
 			return 'sent';
 		}
@@ -286,19 +305,25 @@ final class Queue {
 			// A locally detected rate limit made no API call; it does not use up an attempt.
 			$counted = $response->local ? (int) $row['attempts'] : $attempts;
 
+			$progress = array(
+				'attempts'      => $counted,
+				'retry_class'   => $class,
+				'http_status'   => $response->status,
+				'error_code'    => $response->error_code(),
+				'error_message' => $response->detail(),
+			);
+
 			Log::update(
 				$id,
-				array(
+				$progress + array(
 					'status'          => Log::STATUS_QUEUED,
-					'attempts'        => $counted,
-					'retry_class'     => $class,
 					'next_attempt_at' => gmdate( 'Y-m-d H:i:s', self::next_attempt( $response, $attempts ) ),
 					'locked_until'    => null,
-					'http_status'     => $response->status,
-					'error_code'      => $response->error_code(),
-					'error_message'   => $response->detail(),
 				)
 			);
+			foreach ( Log::followers( (string) $row['mail_id'], $id ) as $follower ) {
+				Log::update( $follower, $progress );
+			}
 			return 'retry';
 		}
 
@@ -315,9 +340,10 @@ final class Queue {
 	}
 
 	/**
-	 * Moves a row to a final state and drops its payload.
+	 * Moves a queued message — its lead row and every follower — to a final
+	 * state, and drops the payload.
 	 *
-	 * @param int   $id      Row id.
+	 * @param int   $id      Lead row id (or a lone row).
 	 * @param array $columns Final columns.
 	 * @return void
 	 */
@@ -326,12 +352,17 @@ final class Queue {
 		$columns['next_attempt_at'] = null;
 		$columns['locked_until']    = null;
 
+		$row = Log::find( $id );
+		$ids = array_merge( array( (int) $id ), $row && '' !== $row['mail_id'] ? Log::followers( $row['mail_id'], $id ) : array() );
+
 		if ( ! Settings::get( 'log_enabled' ) ) {
-			Log::delete( array( $id ) );
+			Log::delete( $ids );
 			return;
 		}
 
-		Log::update( $id, $columns );
+		foreach ( $ids as $row_id ) {
+			Log::update( $row_id, $columns );
+		}
 	}
 
 	/**
@@ -382,6 +413,18 @@ final class Queue {
 					'status'        => Log::STATUS_FAILED,
 					'error_code'    => 'interrupted',
 					'error_message' => __( 'Sending was interrupted (the PHP process stopped). The email may or may not have been accepted, so it was not retried.', 'sendfleet' ),
+				)
+			);
+		}
+
+		// Followers whose lead was deleted: nothing will ever send them.
+		foreach ( Log::orphaned_followers() as $id ) {
+			Log::update(
+				$id,
+				array(
+					'status'        => Log::STATUS_FAILED,
+					'error_code'    => 'payload_missing',
+					'error_message' => __( 'This recipient\'s queued email was cancelled or lost before it was sent.', 'sendfleet' ),
 				)
 			);
 		}

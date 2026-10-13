@@ -219,6 +219,12 @@ final class Webhooks {
 
 		if ( '' !== $key ) {
 			foreach ( Log::find_by_idempotency_key( $key ) as $row ) {
+				// One send can have several recipients under one key; every event
+				// concerns one of them.
+				if ( '' !== $recipient && strtolower( $row['recipient'] ) !== strtolower( $recipient ) ) {
+					continue;
+				}
+
 				$columns = array(
 					'notes' => trim( (string) $row['notes'] . "\n" . $detail ),
 				);

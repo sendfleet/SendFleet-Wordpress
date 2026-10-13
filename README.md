@@ -32,7 +32,7 @@ wp_mail()
   └─ pre_wp_mail filter ─────────────── Mailer            (skips when not connected or routing is off)
        └─ Message_Builder                (header parsing, wp_mail_* filters, phpmailer_init — exactly as core)
             └─ Envelope                  (verified sender, Reply-To, smoke-test rules, attachments, one entry per To/Cc/Bcc)
-                 └─ Dispatcher           (per recipient)
+                 └─ Dispatcher           (one message per ≤50 recipients, one log row per recipient)
                       ├─ Transport ─── POST /v1/send   (circuit breakers, short inline retries)
                       ├─ Queue ─────── WP-Cron         (rate limits, 502/500 retries, background sending)
                       ├─ Fallback ──── PHPMailer       (optional)
@@ -47,7 +47,7 @@ Key decisions:
 |---|---|
 | `pre_wp_mail` instead of redefining `wp_mail()` | No conflict with plugins that only filter mail; WordPress keeps owning the function. |
 | Rebuild the message with a PHPMailer subclass and fire `phpmailer_init` | Plugins that customise PHPMailer (WooCommerce's AltBody, BCC-everything plugins) keep working. The object is read back and sent through the API instead of `mail()`. |
-| One request per recipient | The API accepts one `to`. Cc/Bcc each become their own send. |
+| One request per email, To + Cc + Bcc together | The API sends one message to up to 50 recipients (SES's limit); longer lists are split. Each recipient still gets its own log row, because SendFleet counts, logs and reports every recipient separately. A queued email's first row carries the payload and its other rows follow it. If the API answers that several recipients are not available on the account yet, the plugin sends each recipient alone for 12 hours. |
 | Sender replaced only when its domain cannot send | The API matches the sender's domain exactly; a non-verified sender would be a guaranteed 403. The original sender becomes Reply-To. |
 | Free plan smoke test handled locally | A Shared domain on the Free plan only reaches the account address. Other recipients are skipped without an API call; a foreign Reply-To is moved into the body (contact forms), the sender name is stripped of `< > @ , ; "`. |
 | Retry classes from the API's documented strategy | 429 (rate limit) → wait for the window; 502 `queue_error` / connection failures → backoff, 5 attempts; 500 → one retry; timeouts → **never** retried (the email may have been accepted). |
@@ -120,7 +120,7 @@ Everything is in **SendFleet → Settings**. Constants in `wp-config.php` overri
 | `sendfleet_from_email` | filter `(string $from, string $original)` | Choose the sender (must be on a verified domain). |
 | `sendfleet_from_name` | filter `(string $name, string $original)` | Choose the sender name. |
 | `sendfleet_envelope` | filter `(Envelope $envelope, array $message)` | Adjust the prepared message before anything is sent. |
-| `sendfleet_request` | filter `(array $request, Envelope $envelope)` | Final `POST /v1/send` body per recipient. |
+| `sendfleet_request` | filter `(array $request, Envelope $envelope)` | Final `POST /v1/send` body per message. |
 | `sendfleet_http_args` | filter `(array $args, string $path)` | `wp_remote_request()` arguments (proxies, timeouts). |
 | `sendfleet_api_url` | filter `(string $url)` | API origin. |
 | `sendfleet_dispatched` | action `(array $results, Envelope $envelope)` | Per-recipient outcomes of one `wp_mail()` call. |
@@ -173,7 +173,7 @@ Special recipients on the mock: `fail502@…`, `flaky502@…`, `fail500@…`, `t
 | Syntax | `find . -name '*.php' -not -path './vendor/*' -exec php -l {} \;` | Parses on PHP 7.4 – 8.4 (CI matrix). |
 | Standards | `vendor/bin/phpcs` | WordPress Coding Standards, PHP 7.4 compatibility, i18n text domain, escaping, prepared SQL. |
 | Directory rules | `wp plugin check sendfleet` on `build/sendfleet` | The official WordPress.org Plugin Check. |
-| End to end | `bash tests/e2e/run.sh` | 93 checks through the real `wp_mail()`: routing, sender selection, smoke-test rules, Cc/Bcc, HTML→text, multipart, attachments, `phpmailer_init` compatibility, retries and the queue, background sending, timeouts, fallback (to Mailpit), circuit breakers, rate-limit bursts, webhooks and suppressions, Site Health, privacy tools, maintenance. |
+| End to end | `bash tests/e2e/run.sh` | 110 checks through the real `wp_mail()`: routing, sender selection, smoke-test rules, Cc/Bcc, HTML→text, multipart, attachments, `phpmailer_init` compatibility, retries and the queue, background sending, timeouts, fallback (to Mailpit), circuit breakers, rate-limit bursts, webhooks and suppressions, Site Health, privacy tools, maintenance. |
 
 ## Releasing
 

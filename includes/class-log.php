@@ -11,9 +11,11 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * One row per recipient per email. The same table holds the retry and
- * background queue: a queued row carries the request in `payload`, which is
- * cleared as soon as the row reaches a final state, so message bodies are
- * never kept after delivery.
+ * background queue: a queued message's first row (its lead) carries the
+ * request in `payload`, which is cleared as soon as the row reaches a final
+ * state, so message bodies are never kept after delivery. The message's other
+ * recipients are follower rows: queued, no payload, same `mail_id`; they take
+ * the lead's outcome.
  */
 final class Log {
 
@@ -302,10 +304,47 @@ final class Log {
 			return 0;
 		}
 
+		// Deleting a queued message's lead cancels the message: its followers go too.
+		foreach ( $ids as $id ) {
+			$row = self::find( $id );
+			if ( $row && self::STATUS_QUEUED === $row['status'] && null !== $row['payload'] && '' !== $row['mail_id'] ) {
+				$ids = array_merge( $ids, self::followers( $row['mail_id'], $id ) );
+			}
+		}
+		$ids = array_values( array_unique( $ids ) );
+
 		$table        = Installer::log_table();
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
 		return (int) $wpdb->query( $wpdb->prepare( "DELETE FROM %i WHERE id IN ({$placeholders})", array_merge( array( $table ), $ids ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Placeholders are generated.
+	}
+
+	/**
+	 * The follower rows of a queued message: its other recipients.
+	 *
+	 * @param string $mail_id Message id.
+	 * @param int    $lead_id The lead row.
+	 * @return int[]
+	 */
+	public static function followers( $mail_id, $lead_id ) {
+		global $wpdb;
+
+		$table = Installer::log_table();
+
+		return array_map( 'intval', (array) $wpdb->get_col( $wpdb->prepare( 'SELECT id FROM %i WHERE mail_id = %s AND id <> %d AND status = %s AND payload IS NULL', $table, (string) $mail_id, (int) $lead_id, self::STATUS_QUEUED ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+	}
+
+	/**
+	 * Follower rows whose lead is gone, which nothing would ever send.
+	 *
+	 * @return int[]
+	 */
+	public static function orphaned_followers() {
+		global $wpdb;
+
+		$table = Installer::log_table();
+
+		return array_map( 'intval', (array) $wpdb->get_col( $wpdb->prepare( 'SELECT f.id FROM %i f LEFT JOIN %i l ON l.mail_id = f.mail_id AND l.payload IS NOT NULL AND l.status IN (%s, %s) WHERE f.status = %s AND f.payload IS NULL AND l.id IS NULL LIMIT 500', $table, $table, self::STATUS_QUEUED, self::STATUS_SENDING, self::STATUS_QUEUED ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 	}
 
 	/**
@@ -347,7 +386,7 @@ final class Log {
 
 		$table = Installer::log_table();
 
-		return array_map( 'intval', (array) $wpdb->get_col( $wpdb->prepare( 'SELECT id FROM %i WHERE status = %s AND next_attempt_at <= %s ORDER BY next_attempt_at ASC, id ASC LIMIT %d', $table, self::STATUS_QUEUED, gmdate( 'Y-m-d H:i:s' ), (int) $limit ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+		return array_map( 'intval', (array) $wpdb->get_col( $wpdb->prepare( 'SELECT id FROM %i WHERE status = %s AND payload IS NOT NULL AND next_attempt_at <= %s ORDER BY next_attempt_at ASC, id ASC LIMIT %d', $table, self::STATUS_QUEUED, gmdate( 'Y-m-d H:i:s' ), (int) $limit ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 	}
 
 	/**
@@ -359,7 +398,7 @@ final class Log {
 		global $wpdb;
 
 		$table = Installer::log_table();
-		$next  = $wpdb->get_var( $wpdb->prepare( 'SELECT MIN(next_attempt_at) FROM %i WHERE status = %s', $table, self::STATUS_QUEUED ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+		$next  = $wpdb->get_var( $wpdb->prepare( 'SELECT MIN(next_attempt_at) FROM %i WHERE status = %s AND payload IS NOT NULL', $table, self::STATUS_QUEUED ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 
 		return $next ? (int) strtotime( $next . ' UTC' ) : null;
 	}

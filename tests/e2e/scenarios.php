@@ -147,16 +147,69 @@ sf_check( 'not smoke-only', ! Account::is_smoke_only() );
 $ok   = wp_mail( 'Customer <customer@gmail.com>', 'Order', '<html><head><style>p{color:red}</style></head><body><h1>Thanks</h1><p>Your <a href="https://shop.example.com/o/1">order</a> &amp; receipt.</p></body></html>', array( 'Content-Type: text/html; charset=UTF-8', 'Cc: cc@gmail.com', 'Bcc: bcc@gmail.com, customer@gmail.com' ) );
 $reqs = sf_requests();
 sf_check( 'returns true', true === $ok );
-sf_check( 'one request per unique recipient (to, cc, bcc deduped)', 3 === count( $reqs ), (string) count( $reqs ) );
-$tos = array_map( static function ( $r ) { return $r['body']['to']; }, $reqs );
-sf_check( 'recipients are customer, cc, bcc', array( 'customer@gmail.com', 'cc@gmail.com', 'bcc@gmail.com' ) === $tos, wp_json_encode( $tos ) );
+sf_check( 'one request for the whole email (to, cc, bcc deduped)', 1 === count( $reqs ), (string) count( $reqs ) );
 $b = $reqs[0]['body'];
+sf_check( 'to is a plain string, cc and bcc are lists', 'customer@gmail.com' === $b['to'] && array( 'cc@gmail.com' ) === $b['cc'] && array( 'bcc@gmail.com' ) === $b['bcc'], wp_json_encode( array( $b['to'], $b['cc'] ?? null, $b['bcc'] ?? null ) ) );
 sf_check( 'BYOC sender chosen', 'wordpress@byoc.example.com' === $b['from_email'], $b['from_email'] );
 sf_check( 'HTML passed through', isset( $b['html'] ) && false !== strpos( $b['html'], '<h1>Thanks</h1>' ) );
 sf_check( 'plain text generated from HTML', isset( $b['message'] ) && false !== strpos( $b['message'], 'Thanks' ) && false !== strpos( $b['message'], 'order (https://shop.example.com/o/1)' ) && false === strpos( $b['message'], 'color:red' ) && false !== strpos( $b['message'], '& receipt' ), isset( $b['message'] ) ? $b['message'] : '' );
 sf_check( 'core default sender not used as Reply-To', ! isset( $b['reply_to'] ), isset( $b['reply_to'] ) ? $b['reply_to'] : '' );
 $rows = sf_rows();
-sf_check( 'Cc/Bcc kinds logged', 'cc' === $rows[1]['recipient_kind'] && 'bcc' === $rows[2]['recipient_kind'] );
+sf_check( 'one log row per recipient with its kind', 3 === count( $rows ) && 'to' === $rows[0]['recipient_kind'] && 'cc' === $rows[1]['recipient_kind'] && 'bcc' === $rows[2]['recipient_kind'] );
+sf_check( 'the rows share the message id', 1 === count( array_unique( wp_list_pluck( $rows, 'message_id' ) ) ) && 1 === count( array_unique( wp_list_pluck( $rows, 'mail_id' ) ) ) );
+sf_check( 'cached usage counts every recipient', 3 === Account::used(), (string) Account::used() );
+
+// Several To recipients: a list.
+sf_reset_mock();
+wp_mail( array( 'one@gmail.com', 'two@gmail.com' ), 'Two', 'Body' );
+$b = sf_requests()[0]['body'];
+sf_check( 'several to addresses go as a list in one request', 1 === count( sf_requests() ) && array( 'one@gmail.com', 'two@gmail.com' ) === $b['to'] && ! isset( $b['cc'] ), wp_json_encode( $b['to'] ) );
+
+// More than 50 recipients: split into messages of at most 50. On the paid BYOC
+// plan, because every recipient counts against the free plan's 50.
+sf_use_key( 'paid0001' );
+$many = array();
+for ( $i = 0; $i < 53; $i++ ) {
+	$many[] = "many{$i}@gmail.com";
+}
+$ok   = wp_mail( 'lead@gmail.com', 'Many', 'Body', array( 'Bcc: ' . implode( ', ', $many ) ) );
+$reqs = sf_requests();
+$first = $reqs[0]['body'];
+sf_check( 'the first 50 recipients go as one message', true === $ok && 'lead@gmail.com' === $first['to'] && 49 === count( $first['bcc'] ), (string) count( $reqs ) );
+$rest = array_map( static function ( $r ) { return $r['body']['to']; }, array_slice( $reqs, 1 ) );
+sf_check( 'the remaining Bcc-only chunk goes one message each, as To', array( 'many49@gmail.com', 'many50@gmail.com', 'many51@gmail.com', 'many52@gmail.com' ) === $rest && ! isset( $reqs[1]['body']['bcc'] ), wp_json_encode( $rest ) );
+sf_check( 'every recipient logged', 54 === count( array_filter( sf_rows(), static function ( $r ) { return 'Many' === $r['subject']; } ) ) );
+
+// Only Cc and Bcc (the To was invalid): each becomes its own message's To.
+sf_reset_mock();
+wp_mail( 'not-an-address', 'NoTo', 'Body', array( 'Cc: c1@gmail.com', 'Bcc: b1@gmail.com' ) );
+$tos = array_map( static function ( $r ) { return $r['body']['to']; }, sf_requests() );
+sf_check( 'without a valid To, each recipient is sent alone', array( 'c1@gmail.com', 'b1@gmail.com' ) === $tos && ! isset( sf_requests()[1]['body']['bcc'] ), wp_json_encode( $tos ) );
+
+// The API refuses several recipients while its rollout flag is off: send one each.
+sf_reset_mock();
+wp_remote_post( SF_MOCK . '/__multi', array( 'body' => '0' ) );
+$ok   = wp_mail( 'x1@gmail.com', 'Split', 'Body', array( 'Cc: x2@gmail.com' ) );
+$reqs = sf_requests();
+sf_check( 'multi-recipient unavailable: split into one request each', true === $ok && 3 === count( $reqs ) && 'x1@gmail.com' === $reqs[1]['body']['to'] && 'x2@gmail.com' === $reqs[2]['body']['to'], (string) count( $reqs ) );
+sf_reset_mock();
+wp_remote_post( SF_MOCK . '/__multi', array( 'body' => '0' ) );
+wp_mail( 'y1@gmail.com', 'Split again', 'Body', array( 'Cc: y2@gmail.com' ) );
+sf_check( 'and keeps splitting without asking again', 2 === count( sf_requests() ) );
+State::clear_breaker( 'single_recipient' );
+wp_remote_post( SF_MOCK . '/__multi', array( 'body' => '1' ) );
+
+// A send larger than what is left of the free plan is refused whole.
+sf_use_key( 'byoc0001' );
+$many = array();
+for ( $i = 0; $i < 51; $i++ ) {
+	$many[] = "free{$i}@gmail.com";
+}
+$ok   = wp_mail( 'freelead@gmail.com', 'Too many for free', 'Body', array( 'Bcc: ' . implode( ', ', array_slice( $many, 0, 49 ) ) ) );
+sf_check( 'exactly 50 recipients fit the free plan', true === $ok && 1 === count( sf_requests() ) );
+$ok   = wp_mail( 'freelead@gmail.com', 'Over', 'Body', array( 'Cc: over@gmail.com' ) );
+sf_check( 'none fit once it is used up', false === $ok );
+sf_use_key( 'byoc0001' );
 
 // Third-party sender on an unverified domain becomes Reply-To.
 sf_reset_mock();
@@ -199,7 +252,7 @@ sf_reset_mock();
 wp_mail( 'x@gmail.com', 'Alt', '<p>Hi</p>', array( 'Content-Type: text/html' ) );
 $reqs = sf_requests();
 sf_check( 'AltBody set in phpmailer_init used as plain text', 'ALTBODY FROM PHPMAILER_INIT' === $reqs[0]['body']['message'], $reqs[0]['body']['message'] );
-sf_check( 'BCC added in phpmailer_init gets its own send', 2 === count( $reqs ) && 'audit@byoc.example.com' === $reqs[1]['body']['to'] );
+sf_check( 'BCC added in phpmailer_init is sent as bcc', 1 === count( $reqs ) && array( 'audit@byoc.example.com' ) === $reqs[0]['body']['bcc'], wp_json_encode( $reqs[0]['body'] ) );
 delete_option( 'sf_e2e_altbody' );
 delete_option( 'sf_e2e_bcc' );
 
@@ -303,6 +356,20 @@ Queue::process();
 $row = Log::find( (int) $last['id'] );
 sf_check( '500: fails after the second attempt', 'failed' === $row['status'] && 2 === (int) $row['attempts'], wp_json_encode( array( $row['status'], $row['attempts'] ) ) );
 
+// One queued message, several recipients: the lead row carries the payload,
+// the follower rows take its outcome.
+sf_reset_mock();
+$ok    = wp_mail( 'fail502@gmail.com', 'Group', 'Body', array( 'Cc: follower@gmail.com' ) );
+$group = array_values( array_filter( sf_rows(), static function ( $r ) { return 'Group' === $r['subject']; } ) );
+sf_check( 'a retryable multi-recipient send queues a lead and a follower', true === $ok && 2 === count( $group ) && 'queued' === $group[0]['status'] && ! empty( $group[0]['payload'] ) && 'queued' === $group[1]['status'] && null === $group[1]['payload'], wp_json_encode( wp_list_pluck( $group, 'status' ) ) );
+for ( $i = 0; $i < 6; $i++ ) {
+	sf_make_due();
+	Queue::process();
+}
+$after = array( Log::find( (int) $group[0]['id'] ), Log::find( (int) $group[1]['id'] ) );
+sf_check( 'the follower takes the lead\'s final outcome', 'failed' === $after[0]['status'] && 'failed' === $after[1]['status'] && 'queue_error' === $after[1]['error_code'], wp_json_encode( wp_list_pluck( $after, 'status' ) ) );
+sf_check( 'only the lead was ever sent: one API call per attempt', 5 === count( sf_requests() ), (string) count( sf_requests() ) );
+
 echo "\n== Background sending ==\n";
 Settings::update( array( 'background' => true ) );
 sf_reset_mock();
@@ -314,6 +381,12 @@ sf_make_due();
 $counts = Queue::process();
 $row    = Log::find( (int) $last['id'] );
 sf_check( 'cron sends it', 1 === $counts['sent'] && 'accepted' === $row['status'] && null === $row['payload'] && 'byoc' === $row['mode'], wp_json_encode( $counts ) );
+sf_reset_mock();
+wp_mail( 'bg1@gmail.com', 'Background group', 'Body', array( 'Bcc: bg2@gmail.com' ) );
+sf_make_due();
+Queue::process();
+$group = array_values( array_filter( sf_rows(), static function ( $r ) { return 'Background group' === $r['subject']; } ) );
+sf_check( 'a queued multi-recipient email goes as one request and every row is accepted', 1 === count( sf_requests() ) && array( 'accepted', 'accepted' ) === wp_list_pluck( $group, 'status' ) && array( 'bg2@gmail.com' ) === sf_requests()[0]['body']['bcc'], wp_json_encode( wp_list_pluck( $group, 'status' ) ) );
 Settings::update( array( 'background' => false ) );
 
 echo "\n== Local suppression list ==\n";
@@ -385,9 +458,11 @@ sf_check( 'suspended account: sending_suspended recorded', false === $ok && 'sen
 
 echo "\n== Managed plan + webhooks ==\n";
 sf_use_key( 'mngd0001', array( 'webhook_secret' => Crypto::encrypt( 'whsec_test' ) ) );
-$ok   = wp_mail( 'bounce-me@gmail.com', 'Managed', 'Body' );
+$ok   = wp_mail( 'bounce-me@gmail.com', 'Managed', 'Body', array( 'Cc: stays-fine@gmail.com' ) );
 $rows = sf_rows();
 $row  = $rows[0];
+$cc   = $rows[1];
+sf_check( 'both recipients share the idempotency key', 2 === count( $rows ) && $row['idempotency_key'] === $cc['idempotency_key'] );
 sf_check( 'shared send accepted with idempotency key and warnings', true === $ok && 'shared' === $row['mode'] && '' !== $row['idempotency_key'] && false !== strpos( $row['error_message'], 'DMARC' ), wp_json_encode( $row ) );
 
 $payload = wp_json_encode(
@@ -409,6 +484,7 @@ $good = wp_remote_post( $url, array( 'body' => $payload, 'headers' => array( 'Co
 sf_check( 'valid signature accepted', 200 === wp_remote_retrieve_response_code( $good ), wp_remote_retrieve_body( $good ) );
 $row = Log::find( (int) $row['id'] );
 sf_check( 'log row marked bounced', 'bounced' === $row['status'] && false !== strpos( $row['error_message'], 'Permanent' ), wp_json_encode( array( $row['status'], $row['error_message'] ) ) );
+sf_check( 'the event reached only its recipient\'s row', 'accepted' === Log::find( (int) $cc['id'] )['status'] );
 Suppressions::flush();
 sf_check( 'hard bounce added to suppression list', Suppressions::is_suppressed( 'bounce-me@gmail.com' ) );
 

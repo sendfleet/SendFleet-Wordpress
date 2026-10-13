@@ -11,8 +11,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * The message after SendFleet's sending rules are applied: a sender on a
- * verified domain, one entry per recipient (the API takes one recipient per
- * request, so To, Cc and Bcc each become their own send), attachments that
+ * verified domain, one entry per recipient (To, Cc and Bcc, de-duplicated;
+ * the Dispatcher sends them together, up to 50 per message), attachments that
  * will pass validation, and the Free plan smoke-test restrictions.
  */
 final class Envelope {
@@ -332,13 +332,47 @@ final class Envelope {
 	}
 
 	/**
-	 * The POST /v1/send body for one recipient.
+	 * The POST /v1/send body for one recipient, as the message's only `to`.
 	 *
 	 * @param string $to          Recipient.
 	 * @param bool   $route_rules Apply the smoke-test rules (false for the WordPress fallback).
 	 * @return array
 	 */
 	public function request_for( $to, $route_rules = true ) {
+		return $this->request_for_group(
+			array(
+				array(
+					'email' => $to,
+					'kind'  => 'to',
+				),
+			),
+			$route_rules
+		);
+	}
+
+	/**
+	 * The POST /v1/send body for a group of recipients sent as one message.
+	 *
+	 * `to` stays a plain string when the group has a single `to`, so a
+	 * one-recipient request is the shape it always was; `cc` and `bcc` are
+	 * present only when used. The group must contain at least one `to`.
+	 *
+	 * @param array[] $group       Each: email, kind (to, cc or bcc).
+	 * @param bool    $route_rules Apply the smoke-test rules (false for the WordPress fallback).
+	 * @return array
+	 */
+	public function request_for_group( array $group, $route_rules = true ) {
+		$lists = array(
+			'to'  => array(),
+			'cc'  => array(),
+			'bcc' => array(),
+		);
+
+		foreach ( $group as $member ) {
+			$kind             = isset( $lists[ $member['kind'] ] ) ? $member['kind'] : 'to';
+			$lists[ $kind ][] = $member['email'];
+		}
+
 		$smoke     = $route_rules && Account::ROUTE_SMOKE === $this->route;
 		$from_name = $this->from_name;
 		$reply_to  = $this->reply_to;
@@ -370,9 +404,16 @@ final class Envelope {
 		}
 
 		$request = array(
-			'to'         => $to,
+			'to'         => 1 === count( $lists['to'] ) ? $lists['to'][0] : $lists['to'],
 			'from_email' => $this->from_email,
 		);
+
+		if ( ! empty( $lists['cc'] ) ) {
+			$request['cc'] = $lists['cc'];
+		}
+		if ( ! empty( $lists['bcc'] ) ) {
+			$request['bcc'] = $lists['bcc'];
+		}
 
 		if ( '' !== $from_name ) {
 			$request['from_name'] = $from_name;
@@ -394,7 +435,7 @@ final class Envelope {
 		}
 
 		/**
-		 * Filters the request body sent to POST /v1/send for one recipient.
+		 * Filters the request body sent to POST /v1/send for one message.
 		 *
 		 * @param array    $request  Request body.
 		 * @param Envelope $envelope Prepared message.

@@ -392,6 +392,27 @@ final class Api_Response {
 	}
 
 	/**
+	 * Whether SendFleet refused a multi-recipient request because sending to
+	 * several recipients at once is not available yet. The plugin then sends
+	 * each recipient as its own message.
+	 *
+	 * @return bool
+	 */
+	public function is_multi_recipient_unavailable() {
+		if ( 400 !== $this->status || ! is_array( $this->body ) || empty( $this->body['non_field_errors'] ) ) {
+			return false;
+		}
+
+		foreach ( (array) $this->body['non_field_errors'] as $message ) {
+			if ( is_string( $message ) && false !== stripos( $message, 'more than one recipient' ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Whether the error is the per-key rate limit.
 	 *
 	 * @return bool

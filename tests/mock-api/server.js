@@ -7,7 +7,12 @@
  * smoke-test gate, the monthly quota and the 60/min per-key rate limit.
  * No dependencies. Never point the plugin at this in production.
  *
- * Special recipients (local part) trigger failure paths:
+ * `to`, `cc` and `bcc` take one address or a list, at most 50 together, none
+ * repeated; each recipient counts as one send. MULTI=0 in the environment
+ * answers a multi-recipient request the way the API does while its
+ * MULTI_RECIPIENT_ENABLED flag is off.
+ *
+ * Special recipients (local part of the first `to`) trigger failure paths:
  *   fail502@…    502 queue_error, always
  *   flaky502@…   502 queue_error on the first attempt, then 200
  *   fail500@…    500 internal_error, always
@@ -24,6 +29,8 @@ const http = require('node:http');
 
 const PORT = Number(process.env.PORT || 8080);
 const SLOW_MS = Number(process.env.SLOW_MS || 25000);
+let MULTI = process.env.MULTI !== '0';
+const RECIPIENTS = new WeakMap();
 const pad = (s) => s + 'a'.repeat(32);
 
 const ACCOUNTS = {
@@ -97,8 +104,26 @@ function validate(body) {
 		if (typeof body[k] !== 'string') { errors[k] = ['Not a valid string.']; return; }
 		if (max && body[k].trim().length > max) errors[k] = [`Ensure this field has no more than ${max} characters.`];
 	};
-	if (body.to === undefined) errors.to = ['This field is required.'];
-	else if (!isEmail(body.to)) errors.to = ['Enter a valid email address.'];
+	const list = (k, required) => {
+		const v = body[k];
+		if (v === undefined || v === '' ) {
+			if (required) errors[k] = [v === '' ? 'This field may not be blank.' : 'This field is required.'];
+			return [];
+		}
+		if (Array.isArray(v)) {
+			if (!v.length) { if (required) errors[k] = ['This list may not be empty.']; return []; }
+			if (v.length > 50) { errors[k] = ['Ensure this field has no more than 50 elements.']; return []; }
+			const per = {};
+			v.forEach((a, i) => { if (!isEmail(a)) per[i] = ['Enter a valid email address.']; });
+			if (Object.keys(per).length) errors[k] = per;
+			return v.map((a) => String(a).trim());
+		}
+		if (!isEmail(v)) { errors[k] = ['Enter a valid email address.']; return []; }
+		return [v.trim()];
+	};
+	const to = list('to', true);
+	const cc = list('cc', false);
+	const bcc = list('bcc', false);
 	if (body.from_email !== undefined && body.from_email !== '' && !isEmail(body.from_email)) errors.from_email = ['Enter a valid email address.'];
 	if (body.reply_to !== undefined && body.reply_to !== '' && !isEmail(body.reply_to)) errors.reply_to = ['Enter a valid email address.'];
 	str('from_name', 156); str('subject', 256); str('message'); str('html');
@@ -120,6 +145,14 @@ function validate(body) {
 		}
 	}
 	if (Object.keys(errors).length) return errors;
+	const all = [...to, ...cc, ...bcc];
+	if (all.length > 50) return { non_field_errors: ["Provide no more than 50 recipients across 'to', 'cc' and 'bcc' together."] };
+	const seen = new Set();
+	for (const a of all) {
+		if (seen.has(a.toLowerCase())) return { non_field_errors: [`Each recipient may appear only once across 'to', 'cc' and 'bcc'; ${a} appears more than once.`] };
+		seen.add(a.toLowerCase());
+	}
+	RECIPIENTS.set(body, { to, cc, bcc, all });
 	const message = typeof body.message === 'string' ? body.message.trim() : '';
 	const html = typeof body.html === 'string' ? body.html.trim() : '';
 	if (!message && !html && !(body.attachments || []).length) return { non_field_errors: ["Provide at least one of 'message', 'html', or 'attachments'."] };
@@ -132,7 +165,10 @@ async function handleSend(req, res, key, account, body) {
 
 	if (account.suspended) return sendError(res, 403, 'sending_suspended', 'Your account\'s email sending has been suspended. Please contact support@sendfleet.net to discuss reinstatement.');
 
-	const to = body.to.trim();
+	const { to: toList, cc: ccList, bcc: bccList, all } = RECIPIENTS.get(body);
+	if (all.length > 1 && !MULTI) return json(res, 400, { non_field_errors: ['Sending one email to more than one recipient is not available yet. Send one request per recipient.'] });
+	const n = all.length;
+	const to = toList[0];
 	const local = to.split('@')[0].toLowerCase();
 	const from = (body.from_email && body.from_email.trim()) || account.email;
 	const domain = domainOf(from);
@@ -151,7 +187,8 @@ async function handleSend(req, res, key, account, body) {
 	if (smoke) {
 		const own = norm(account.email);
 		const refusal = `On the Free plan, Shared SES is a smoke test, not a sending path: it only delivers to your account's own verified address (${account.email}).`;
-		if (norm(to) !== own) return sendError(res, 403, 'unauthorized', refusal);
+		if (toList.length !== 1 || norm(to) !== own) return sendError(res, 403, 'unauthorized', refusal);
+		if (ccList.length || bccList.length) return sendError(res, 403, 'unauthorized', "Cc and Bcc are not available on the Free plan's Shared SES smoke test. " + refusal);
 		if (body.reply_to && norm(body.reply_to) !== own && norm(body.reply_to) !== norm(from)) return sendError(res, 403, 'unauthorized', 'On the Free plan\'s Shared SES smoke test, Reply-To can only be your own verified address or the sender address. ' + refusal);
 		if (/[\x00-\x1f\x7f]/.test(body.from_name || '') || /[\x00-\x1f\x7f]/.test(body.subject || '')) return sendError(res, 403, 'unauthorized', 'Line breaks and control characters are not allowed in from_name or subject on the Free plan\'s Shared SES smoke test.');
 		if (/[<>@,;"]/.test(body.from_name || '')) return sendError(res, 403, 'unauthorized', 'from_name cannot contain an address or the characters < > @ , ; " on the Free plan\'s Shared SES smoke test.');
@@ -163,14 +200,17 @@ async function handleSend(req, res, key, account, body) {
 	if (limit !== null && limit !== undefined && used >= limit) {
 		return sendError(res, 429, 'usage_limit_exceeded', `Monthly limit of ${limit} emails reached for this calendar month (UTC).`);
 	}
+	if (limit !== null && limit !== undefined && used + n > limit) {
+		return sendError(res, 429, 'usage_limit_exceeded', `This email has ${n} recipients and each counts as one send, but only ${limit - used} of your plan's ${limit} emails are left this calendar month (UTC).`);
+	}
 
-	const n = (attempts[to.toLowerCase()] = (attempts[to.toLowerCase()] || 0) + 1);
-	if (local === 'fail502' || (local === 'flaky502' && n === 1)) return sendError(res, 502, 'queue_error', 'Could not queue email for delivery. Please try again.');
+	const tries = (attempts[to.toLowerCase()] = (attempts[to.toLowerCase()] || 0) + 1);
+	if (local === 'fail502' || (local === 'flaky502' && tries === 1)) return sendError(res, 502, 'queue_error', 'Could not queue email for delivery. Please try again.');
 	if (local === 'fail500') return sendError(res, 500, 'internal_error', 'An unexpected error occurred. Please try again.');
-	if (local === 'throttle' && n === 1) return json(res, 429, { detail: 'Request was throttled. Expected available in 2 seconds.' }, { 'Retry-After': '2' });
+	if (local === 'throttle' && tries === 1) return json(res, 429, { detail: 'Request was throttled. Expected available in 2 seconds.' }, { 'Retry-After': '2' });
 	if (local === 'slow') await new Promise((r) => setTimeout(r, SLOW_MS));
 
-	if (account.plan === 'starter' || mode === 'byoc') u.byoc += 1; else u.shared += 1;
+	if (account.plan === 'starter' || mode === 'byoc') u.byoc += n; else u.shared += n;
 
 	const id = require('node:crypto').randomUUID();
 	const out = { success: true, message: mode === 'shared' ? 'Email queued for delivery.' : 'Email queued for delivery via your SES account.', message_id: id, mode };
@@ -180,6 +220,7 @@ async function handleSend(req, res, key, account, body) {
 		if (smoke) out.warnings.push('Free plan Shared smoke test: delivered only to your own verified address, no webhooks fired. To send to anyone else, use a BYOC domain or a Managed plan.');
 	}
 	if (Array.isArray(body.attachments) && body.attachments.length) out.attachments = body.attachments.length;
+	if (n > 1) out.recipients = n;
 	return json(res, 200, out);
 }
 
@@ -192,7 +233,8 @@ const server = http.createServer((req, res) => {
 		const path = url.pathname.replace(/\/$/, '');
 
 		if (path === '/__requests') return json(res, 200, requests);
-		if (path === '/__reset' && req.method === 'POST') { requests = []; usage = {}; attempts = {}; windows = {}; return json(res, 200, { ok: true }); }
+		if (path === '/__reset' && req.method === 'POST') { requests = []; usage = {}; attempts = {}; windows = {}; MULTI = process.env.MULTI !== '0'; return json(res, 200, { ok: true }); }
+		if (path === '/__multi' && req.method === 'POST') { MULTI = raw.trim() !== '0'; return json(res, 200, { multi: MULTI }); }
 		if (path === '/health') return json(res, 200, { status: 'ok', version: 'mock' });
 
 		const key = req.headers['x-api-key'] || '';

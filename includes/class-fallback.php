@@ -34,7 +34,7 @@ final class Fallback {
 	/**
 	 * Sends one request body through PHPMailer.
 	 *
-	 * @param array $request POST /v1/send body (with `to`).
+	 * @param array $request POST /v1/send body (with `to`, and `cc` / `bcc` when used).
 	 * @param array $meta    Sender as WordPress would have used it: from_email, from_name, reply_to.
 	 * @return true|\WP_Error
 	 */
@@ -52,7 +52,16 @@ final class Fallback {
 			$mailer->isMail();
 			$mailer->CharSet = 'UTF-8';
 			$mailer->setFrom( $from, $name, false );
-			$mailer->addAddress( (string) $request['to'] );
+
+			foreach ( (array) $request['to'] as $address ) {
+				$mailer->addAddress( (string) $address );
+			}
+			foreach ( isset( $request['cc'] ) ? (array) $request['cc'] : array() as $address ) {
+				$mailer->addCC( (string) $address );
+			}
+			foreach ( isset( $request['bcc'] ) ? (array) $request['bcc'] : array() as $address ) {
+				$mailer->addBCC( (string) $address );
+			}
 
 			if ( ! empty( $meta['reply_to'] ) ) {
 				$mailer->addReplyTo( (string) $meta['reply_to'] );

@@ -73,7 +73,7 @@ $sendfleet_mode_name = array(
 			</div>
 			<div class="sf-card">
 				<h3 class="sf-card__title"><?php esc_html_e( 'Nothing else to configure', 'sendfleet' ); ?></h3>
-				<p><?php esc_html_e( 'The sender is picked from your verified domains automatically. Cc and Bcc recipients each get their own send. Rate limits and transient errors are retried for you.', 'sendfleet' ); ?></p>
+				<p><?php esc_html_e( 'The sender is picked from your verified domains automatically. To, Cc and Bcc go out together as one message. Rate limits and transient errors are retried for you.', 'sendfleet' ); ?></p>
 			</div>
 		</div>
 

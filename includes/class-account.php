@@ -201,10 +201,11 @@ final class Account {
 	 * Counts an accepted send in the cached usage, so the overview stays close
 	 * to the truth between /v1/me refreshes (which correct any drift).
 	 *
-	 * @param string $mode Mode reported by the API: byoc or shared.
+	 * @param string $mode  Mode reported by the API: byoc or shared.
+	 * @param int    $count Recipients of the send; each counts as one send.
 	 * @return void
 	 */
-	public static function note_sent( $mode ) {
+	public static function note_sent( $mode, $count = 1 ) {
 		$stored = get_option( self::OPTION );
 
 		if ( ! is_array( $stored ) || empty( $stored['data'] ) || ! is_array( $stored['data'] ) ) {
@@ -214,7 +215,7 @@ final class Account {
 		// On the Free plan the BYOC counter is the plan's one counter, smoke tests included.
 		$field = ( 'shared' === $mode && 'starter' !== $stored['data']['current_plan'] ) ? 'shared_usage_current_month' : 'byoc_usage_current_month';
 
-		$stored['data'][ $field ] = (int) $stored['data'][ $field ] + 1;
+		$stored['data'][ $field ] = (int) $stored['data'][ $field ] + max( 1, (int) $count );
 
 		update_option( self::OPTION, $stored, true );
 	}

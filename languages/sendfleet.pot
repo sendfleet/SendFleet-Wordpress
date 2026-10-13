@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-13T10:27:25+00:00\n"
+"POT-Creation-Date: 2026-10-13T13:58:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: sendfleet\n"
@@ -417,17 +417,17 @@ msgid "%s: would take the email over the 37 MB total attachment limit."
 msgstr ""
 
 #. translators: %s: request id.
-#: includes/class-dispatcher.php:194
+#: includes/class-dispatcher.php:312
 #, php-format
 msgid "(request id %s)"
 msgstr ""
 
-#: includes/class-dispatcher.php:216
+#: includes/class-dispatcher.php:334
 msgid "Sent through WordPress' default mailer instead (fallback is on)."
 msgstr ""
 
 #. translators: %s: error message.
-#: includes/class-dispatcher.php:224
+#: includes/class-dispatcher.php:342
 #, php-format
 msgid "The WordPress fallback also failed: %s"
 msgstr ""
@@ -483,64 +483,64 @@ msgid "On the Free plan, a Shared SES domain is a smoke test: it only delivers t
 msgstr ""
 
 #. translators: %s: email address.
-#: includes/class-envelope.php:356
+#: includes/class-envelope.php:390
 #, php-format
 msgid "Reply to: %s (shown here because the SendFleet Free plan smoke test only allows your own address as Reply-To)"
 msgstr ""
 
-#: includes/class-log.php:45
+#: includes/class-log.php:47
 msgid "Queued"
 msgstr ""
 
-#: includes/class-log.php:46
+#: includes/class-log.php:48
 msgid "Sending"
 msgstr ""
 
-#: includes/class-log.php:47
+#: includes/class-log.php:49
 msgid "Accepted"
 msgstr ""
 
-#: includes/class-log.php:48
+#: includes/class-log.php:50
 msgid "Sent"
 msgstr ""
 
-#: includes/class-log.php:49
+#: includes/class-log.php:51
 msgid "Delivered"
 msgstr ""
 
-#: includes/class-log.php:50
+#: includes/class-log.php:52
 msgid "Delayed"
 msgstr ""
 
-#: includes/class-log.php:51
+#: includes/class-log.php:53
 msgid "Bounced"
 msgstr ""
 
-#: includes/class-log.php:52
+#: includes/class-log.php:54
 msgid "Complained"
 msgstr ""
 
-#: includes/class-log.php:53
+#: includes/class-log.php:55
 msgid "Rejected"
 msgstr ""
 
-#: includes/class-log.php:54
+#: includes/class-log.php:56
 msgid "Suppressed"
 msgstr ""
 
-#: includes/class-log.php:55
+#: includes/class-log.php:57
 msgid "Undelivered"
 msgstr ""
 
-#: includes/class-log.php:56
+#: includes/class-log.php:58
 msgid "Failed"
 msgstr ""
 
-#: includes/class-log.php:57
+#: includes/class-log.php:59
 msgid "Skipped"
 msgstr ""
 
-#: includes/class-log.php:58
+#: includes/class-log.php:60
 msgid "Sent via WordPress"
 msgstr ""
 
@@ -623,12 +623,16 @@ msgstr ""
 msgid "SendFleet privacy policy: %s"
 msgstr ""
 
-#: includes/class-queue.php:265
+#: includes/class-queue.php:283
 msgid "The queued email could not be read back from the database."
 msgstr ""
 
-#: includes/class-queue.php:384
+#: includes/class-queue.php:415
 msgid "Sending was interrupted (the PHP process stopped). The email may or may not have been accepted, so it was not retried."
+msgstr ""
+
+#: includes/class-queue.php:427
+msgid "This recipient's queued email was cancelled or lost before it was sent."
 msgstr ""
 
 #: includes/class-site-health.php:35
@@ -1109,7 +1113,7 @@ msgid "Nothing else to configure"
 msgstr ""
 
 #: includes/views/overview.php:76
-msgid "The sender is picked from your verified domains automatically. Cc and Bcc recipients each get their own send. Rate limits and transient errors are retried for you."
+msgid "The sender is picked from your verified domains automatically. To, Cc and Bcc go out together as one message. Rate limits and transient errors are retried for you."
 msgstr ""
 
 #: includes/views/overview.php:87
