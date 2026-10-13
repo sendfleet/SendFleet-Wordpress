@@ -1,0 +1,19 @@
+# Files and folders that are not shipped in the WordPress.org release.
+/.git
+/.github
+/.wordpress-org
+/bin
+/build
+/dist
+/node_modules
+/tests
+/vendor
+.distignore
+.gitattributes
+.gitignore
+composer.json
+composer.lock
+docker-compose.yml
+phpcs.xml.dist
+README.md
+*.zip

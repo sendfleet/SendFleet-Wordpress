@@ -1,0 +1,31 @@
+{
+	"name": "sendfleet/sendfleet-wordpress",
+	"description": "Official SendFleet plugin for WordPress: routes wp_mail() through the SendFleet API.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"homepage": "https://sendfleet.net/",
+	"support": {
+		"email": "support@sendfleet.net",
+		"docs": "https://docs.sendfleet.net/"
+	},
+	"require": {
+		"php": ">=7.4"
+	},
+	"require-dev": {
+		"wp-coding-standards/wpcs": "^3.1",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"platform": {
+			"php": "7.4"
+		}
+	},
+	"scripts": {
+		"lint": "phpcs",
+		"lint:fix": "phpcbf"
+	}
+}

@@ -1,0 +1,25 @@
+name: Update WordPress.org readme and assets
+
+# Pushes readme.txt and .wordpress-org/ changes to WordPress.org without a new
+# release (e.g. bumping "Tested up to" or replacing a screenshot).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - readme.txt
+      - .wordpress-org/**
+
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y subversion
+      - uses: 10up/action-wordpress-plugin-asset-update@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: sendfleet
+          ASSETS_DIR: .wordpress-org
+          IGNORE_OTHER_FILES: true

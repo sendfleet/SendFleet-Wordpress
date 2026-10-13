@@ -1,0 +1,45 @@
+name: Release to WordPress.org
+
+# Push a tag that matches the plugin version (e.g. `git tag 1.0.1 && git push origin 1.0.1`).
+# Requires the repository secrets SVN_USERNAME and SVN_PASSWORD (your WordPress.org
+# username and its SVN password from https://profiles.wordpress.org/me/profile/edit/group/3/?screen=svn-password).
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag matches the plugin version
+        run: |
+          version="$(sed -n 's/^ \* Version:[[:space:]]*//p' sendfleet.php | tr -d '\r')"
+          if [ "$version" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match plugin version ${version}" >&2
+            exit 1
+          fi
+
+      - run: sudo apt-get update && sudo apt-get install -y rsync zip subversion
+
+      - name: Build the zip
+        run: bash bin/build.sh
+
+      - name: Deploy to WordPress.org SVN
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: sendfleet
+          ASSETS_DIR: .wordpress-org
+
+      - name: Attach the zip to a GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/sendfleet-${{ github.ref_name }}.zip

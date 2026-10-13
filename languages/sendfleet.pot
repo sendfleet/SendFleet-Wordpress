@@ -1,0 +1,1480 @@
+# Copyright (C) 2026 SendFleet
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: SendFleet 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sendfleet/\n"
+"Last-Translator: SendFleet <support@sendfleet.net>\n"
+"Language-Team: SendFleet <support@sendfleet.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-13T10:27:25+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: sendfleet\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: sendfleet.php
+#: includes/admin/class-admin.php:75
+#: includes/admin/class-admin.php:76
+#: includes/class-site-health.php:147
+msgid "SendFleet"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: sendfleet.php
+msgid "https://docs.sendfleet.net/"
+msgstr ""
+
+#. Description of the plugin
+#: sendfleet.php
+msgid "Routes every email WordPress sends through the SendFleet API — your own AWS SES (BYOC) or SendFleet's managed SES. Paste an API key and wp_mail() is handled."
+msgstr ""
+
+#. Author URI of the plugin
+#: sendfleet.php
+msgid "https://sendfleet.net/"
+msgstr ""
+
+#: includes/admin/class-admin.php:84
+msgid "SendFleet Overview"
+msgstr ""
+
+#: includes/admin/class-admin.php:84
+#: includes/admin/class-admin.php:650
+msgid "Overview"
+msgstr ""
+
+#: includes/admin/class-admin.php:85
+msgid "SendFleet Email Log"
+msgstr ""
+
+#: includes/admin/class-admin.php:85
+#: includes/admin/class-admin.php:651
+msgid "Email Log"
+msgstr ""
+
+#: includes/admin/class-admin.php:86
+msgid "SendFleet Settings"
+msgstr ""
+
+#: includes/admin/class-admin.php:86
+#: includes/admin/class-admin.php:149
+#: includes/admin/class-admin.php:652
+msgid "Settings"
+msgstr ""
+
+#: includes/admin/class-admin.php:134
+msgid "Copied"
+msgstr ""
+
+#: includes/admin/class-admin.php:135
+#: includes/views/overview.php:44
+#: includes/views/settings.php:41
+msgid "Show"
+msgstr ""
+
+#: includes/admin/class-admin.php:136
+msgid "Hide"
+msgstr ""
+
+#: includes/admin/class-admin.php:137
+msgid "Are you sure?"
+msgstr ""
+
+#: includes/admin/class-admin.php:149
+#: includes/views/overview.php:45
+msgid "Connect"
+msgstr ""
+
+#: includes/admin/class-admin.php:165
+msgid "API documentation"
+msgstr ""
+
+#: includes/admin/class-admin.php:166
+msgid "Support"
+msgstr ""
+
+#: includes/admin/class-admin.php:196
+msgid "SendFleet:"
+msgstr ""
+
+#: includes/admin/class-admin.php:199
+msgid "Connect SendFleet"
+msgstr ""
+
+#: includes/admin/class-admin.php:199
+#: includes/class-site-health.php:56
+msgid "Open SendFleet"
+msgstr ""
+
+#: includes/admin/class-admin.php:256
+#: includes/admin/class-admin.php:636
+msgid "You are not allowed to manage SendFleet."
+msgstr ""
+
+#: includes/admin/class-admin.php:311
+msgid "That does not look like a SendFleet API key. Keys have the form prefix.secret (8 characters, a dot, 32 characters). Copy the whole key from the SendFleet dashboard."
+msgstr ""
+
+#. translators: %s: API error detail.
+#: includes/admin/class-admin.php:319
+#, php-format
+msgid "SendFleet rejected this API key: %s Check that you copied the whole key and that it is not revoked or expired."
+msgstr ""
+
+#: includes/admin/class-admin.php:326
+msgid "This server cannot encrypt the key (neither libsodium nor OpenSSL is available). Define SENDFLEET_API_KEY in wp-config.php instead."
+msgstr ""
+
+#. translators: 1: account email, 2: plan name.
+#: includes/admin/class-admin.php:336
+#, php-format
+msgid "Connected to SendFleet as %1$s (%2$s). WordPress email now goes through SendFleet."
+msgstr ""
+
+#. translators: %s: error detail.
+#: includes/admin/class-admin.php:339
+#, php-format
+msgid "The API key was saved, but SendFleet could not be reached to confirm it: %s"
+msgstr ""
+
+#: includes/admin/class-admin.php:355
+msgid "Paste your SendFleet API key first."
+msgstr ""
+
+#: includes/admin/class-admin.php:377
+msgid "The API key was removed. WordPress is sending email the default way again."
+msgstr ""
+
+#: includes/admin/class-admin.php:407
+msgid "The default sender is not a valid email address and was not saved."
+msgstr ""
+
+#. translators: %s: email address.
+#: includes/admin/class-admin.php:413
+#, php-format
+msgid "%s is not on a verified sending domain of your SendFleet account, so it cannot be used as the sender yet. Pick an address on one of the domains listed."
+msgstr ""
+
+#: includes/admin/class-admin.php:421
+msgid "The default Reply-To is not a valid email address and was not saved."
+msgstr ""
+
+#: includes/admin/class-admin.php:433
+msgid "The webhook secret could not be encrypted on this server. Define SENDFLEET_WEBHOOK_SECRET in wp-config.php instead."
+msgstr ""
+
+#: includes/admin/class-admin.php:450
+msgid "Settings saved."
+msgstr ""
+
+#: includes/admin/class-admin.php:465
+msgid "Account details refreshed from SendFleet."
+msgstr ""
+
+#. translators: %s: error detail.
+#: includes/admin/class-admin.php:468
+#, php-format
+msgid "Could not refresh the account details: %s"
+msgstr ""
+
+#: includes/admin/class-admin.php:486
+msgid "Enter a valid recipient address for the test email."
+msgstr ""
+
+#. translators: %s: number of entries.
+#: includes/admin/class-admin.php:507
+#: includes/admin/class-admin.php:595
+#, php-format
+msgid "%s log entry deleted."
+msgid_plural "%s log entries deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin/class-admin.php:525
+msgid "Enter a valid email address."
+msgstr ""
+
+#: includes/admin/class-admin.php:526
+msgid "Added by an administrator."
+msgstr ""
+
+#. translators: %s: email address.
+#: includes/admin/class-admin.php:528
+#, php-format
+msgid "%s will no longer receive email from this site."
+msgstr ""
+
+#. translators: %s: email address.
+#: includes/admin/class-admin.php:531
+#, php-format
+msgid "%s is already on the suppression list."
+msgstr ""
+
+#. translators: %s: number of addresses.
+#: includes/admin/class-admin.php:544
+#, php-format
+msgid "%s address removed from the suppression list."
+msgid_plural "%s addresses removed from the suppression list."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: sent, 2: waiting, 3: failed, 4: still queued.
+#: includes/admin/class-admin.php:564
+#, php-format
+msgid "Queue processed: %1$d sent, %2$d waiting to retry, %3$d failed. %4$d still queued."
+msgstr ""
+
+#: includes/admin/class-admin.php:664
+#: includes/class-site-health.php:95
+msgid "Routing wp_mail()"
+msgstr ""
+
+#: includes/admin/class-admin.php:664
+msgid "Not routing"
+msgstr ""
+
+#: includes/admin/class-admin.php:667
+msgid "SendFleet sections"
+msgstr ""
+
+#: includes/admin/class-log-table.php:54
+#: includes/views/overview.php:256
+msgid "Date"
+msgstr ""
+
+#: includes/admin/class-log-table.php:55
+#: includes/class-privacy.php:83
+#: includes/views/log.php:36
+#: includes/views/overview.php:257
+msgid "Recipient"
+msgstr ""
+
+#: includes/admin/class-log-table.php:56
+#: includes/class-privacy.php:91
+#: includes/views/overview.php:258
+msgid "Subject"
+msgstr ""
+
+#: includes/admin/class-log-table.php:57
+#: includes/class-privacy.php:95
+#: includes/views/overview.php:259
+msgid "Status"
+msgstr ""
+
+#: includes/admin/class-log-table.php:58
+#: includes/views/log.php:45
+msgid "Route"
+msgstr ""
+
+#: includes/admin/class-log-table.php:59
+#: includes/views/log.php:77
+msgid "Sent by"
+msgstr ""
+
+#: includes/admin/class-log-table.php:100
+msgid "Delete the selected entries? Selected queued emails will not be sent."
+msgstr ""
+
+#: includes/admin/class-log-table.php:101
+msgid "Delete selected"
+msgstr ""
+
+#: includes/admin/class-log-table.php:120
+msgid "All"
+msgstr ""
+
+#: includes/admin/class-log-table.php:177
+msgid "No emails logged yet. Everything WordPress sends through SendFleet appears here."
+msgstr ""
+
+#: includes/admin/class-log-table.php:228
+#: includes/views/log.php:61
+msgid "Details"
+msgstr ""
+
+#: includes/admin/class-log-table.php:240
+#: includes/views/log.php:32
+#: includes/views/overview.php:267
+msgid "(no subject)"
+msgstr ""
+
+#: includes/admin/class-log-table.php:241
+#: includes/views/log.php:68
+msgid "Attachments"
+msgstr ""
+
+#: includes/admin/class-log-table.php:272
+#: includes/class-account.php:53
+msgid "BYOC"
+msgstr ""
+
+#: includes/admin/class-log-table.php:273
+#: includes/views/overview.php:23
+msgid "Shared SES"
+msgstr ""
+
+#: includes/admin/class-log-table.php:274
+msgid "Smoke test"
+msgstr ""
+
+#: includes/class-account.php:48
+msgid "Free BYOC"
+msgstr ""
+
+#: includes/class-account.php:58
+msgid "Managed Starter"
+msgstr ""
+
+#: includes/class-account.php:63
+msgid "Managed Growth"
+msgstr ""
+
+#: includes/class-account.php:68
+msgid "Managed Pro"
+msgstr ""
+
+#: includes/class-api-client.php:85
+msgid "The email could not be encoded as JSON (invalid characters in the content)."
+msgstr ""
+
+#: includes/class-api-client.php:114
+msgid "No SendFleet API key is configured."
+msgstr ""
+
+#. translators: %d: seconds.
+#: includes/class-api-response.php:156
+#, php-format
+msgid "Waiting for the SendFleet rate limit (60 requests per minute per key) to lift in %d seconds."
+msgstr ""
+
+#: includes/class-api-response.php:242
+msgid "The SendFleet API did not answer in time. The email may or may not have been accepted, so it was not retried automatically."
+msgstr ""
+
+#. translators: %s: transport error message.
+#: includes/class-api-response.php:246
+#, php-format
+msgid "Could not reach the SendFleet API: %s"
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/class-api-response.php:262
+#, php-format
+msgid "The SendFleet API returned HTTP %d without a JSON body."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/class-api-response.php:269
+#, php-format
+msgid "The SendFleet API returned HTTP %d."
+msgstr ""
+
+#. translators: 1: file name, 2: maximum number of attachments.
+#: includes/class-attachments.php:123
+#, php-format
+msgid "%1$s: SendFleet accepts at most %2$d attachments per email."
+msgstr ""
+
+#. translators: 1: file name, 2: file extension.
+#: includes/class-attachments.php:131
+#, php-format
+msgid "%1$s: .%2$s files are refused by SendFleet for security reasons."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-attachments.php:139
+#, php-format
+msgid "%s: this file type is not on SendFleet's list of allowed attachment types."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-attachments.php:149
+#: includes/class-attachments.php:172
+#, php-format
+msgid "%s: larger than the 25 MB per-file limit."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-attachments.php:158
+#, php-format
+msgid "%s: the file could not be read."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-attachments.php:166
+#, php-format
+msgid "%s: the file is empty."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-attachments.php:178
+#, php-format
+msgid "%s: would take the email over the 37 MB total attachment limit."
+msgstr ""
+
+#. translators: %s: request id.
+#: includes/class-dispatcher.php:194
+#, php-format
+msgid "(request id %s)"
+msgstr ""
+
+#: includes/class-dispatcher.php:216
+msgid "Sent through WordPress' default mailer instead (fallback is on)."
+msgstr ""
+
+#. translators: %s: error message.
+#: includes/class-dispatcher.php:224
+#, php-format
+msgid "The WordPress fallback also failed: %s"
+msgstr ""
+
+#. translators: 1: original sender, 2: sender used.
+#: includes/class-envelope.php:186
+#, php-format
+msgid "Sender changed from %1$s to %2$s (Force sender address is on)."
+msgstr ""
+
+#. translators: 1: original sender, 2: sender used.
+#: includes/class-envelope.php:189
+#, php-format
+msgid "Sender %1$s is not on a verified SendFleet domain; sent from %2$s instead."
+msgstr ""
+
+#. translators: %s: email address.
+#: includes/class-envelope.php:196
+#, php-format
+msgid "Reply-To set to the original sender, %s."
+msgstr ""
+
+#. translators: %s: list of header names.
+#: includes/class-envelope.php:238
+#, php-format
+msgid "Custom headers are not supported by the SendFleet API and were not sent: %s"
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-envelope.php:243
+#, php-format
+msgid "Attachment left out: %s could not be read."
+msgstr ""
+
+#. translators: %s: reason.
+#: includes/class-envelope.php:247
+#, php-format
+msgid "Attachment left out: %s"
+msgstr ""
+
+#: includes/class-envelope.php:276
+msgid "Not a valid email address."
+msgstr ""
+
+#: includes/class-envelope.php:279
+msgid "The address is on this site's SendFleet suppression list (an earlier hard bounce or spam complaint)."
+msgstr ""
+
+#. translators: %s: SendFleet account email.
+#: includes/class-envelope.php:288
+#, php-format
+msgid "On the Free plan, a Shared SES domain is a smoke test: it only delivers to your SendFleet account address (%s). Add a BYOC domain or choose a Managed plan to email anyone else."
+msgstr ""
+
+#. translators: %s: email address.
+#: includes/class-envelope.php:356
+#, php-format
+msgid "Reply to: %s (shown here because the SendFleet Free plan smoke test only allows your own address as Reply-To)"
+msgstr ""
+
+#: includes/class-log.php:45
+msgid "Queued"
+msgstr ""
+
+#: includes/class-log.php:46
+msgid "Sending"
+msgstr ""
+
+#: includes/class-log.php:47
+msgid "Accepted"
+msgstr ""
+
+#: includes/class-log.php:48
+msgid "Sent"
+msgstr ""
+
+#: includes/class-log.php:49
+msgid "Delivered"
+msgstr ""
+
+#: includes/class-log.php:50
+msgid "Delayed"
+msgstr ""
+
+#: includes/class-log.php:51
+msgid "Bounced"
+msgstr ""
+
+#: includes/class-log.php:52
+msgid "Complained"
+msgstr ""
+
+#: includes/class-log.php:53
+msgid "Rejected"
+msgstr ""
+
+#: includes/class-log.php:54
+msgid "Suppressed"
+msgstr ""
+
+#: includes/class-log.php:55
+msgid "Undelivered"
+msgstr ""
+
+#: includes/class-log.php:56
+msgid "Failed"
+msgstr ""
+
+#: includes/class-log.php:57
+msgid "Skipped"
+msgstr ""
+
+#: includes/class-log.php:58
+msgid "Sent via WordPress"
+msgstr ""
+
+#. translators: %s: error message.
+#: includes/class-mailer.php:76
+#, php-format
+msgid "SendFleet: %s"
+msgstr ""
+
+#: includes/class-mailer.php:104
+msgid "You must provide at least one recipient email address."
+msgstr ""
+
+#: includes/class-mailer.php:109
+msgid "Message body empty"
+msgstr ""
+
+#. translators: %s: list of failures.
+#: includes/class-mailer.php:145
+#, php-format
+msgid "SendFleet did not send this email. %s"
+msgstr ""
+
+#: includes/class-privacy.php:39
+#: includes/class-privacy.php:54
+msgid "SendFleet email log"
+msgstr ""
+
+#: includes/class-privacy.php:75
+msgid "Emails sent through SendFleet"
+msgstr ""
+
+#: includes/class-privacy.php:79
+msgid "Date (UTC)"
+msgstr ""
+
+#: includes/class-privacy.php:87
+#: includes/views/log.php:38
+#: includes/views/settings.php:60
+msgid "Sender"
+msgstr ""
+
+#: includes/class-privacy.php:110
+msgid "SendFleet suppression list"
+msgstr ""
+
+#: includes/class-privacy.php:114
+#: includes/views/log.php:185
+msgid "Address"
+msgstr ""
+
+#: includes/class-privacy.php:118
+#: includes/views/log.php:186
+msgid "Reason"
+msgstr ""
+
+#: includes/class-privacy.php:122
+msgid "Added (UTC)"
+msgstr ""
+
+#: includes/class-privacy.php:154
+msgid "The address stays on the SendFleet suppression list so that no further email is sent to it. Remove it under SendFleet → Email Log → Suppressions if that is required."
+msgstr ""
+
+#: includes/class-privacy.php:175
+msgid "This site sends email (for example account, order and form notifications) through SendFleet, a transactional email service. To deliver a message, the recipient address, sender, subject, message content and any attachments are transmitted to SendFleet (api.sendfleet.net)."
+msgstr ""
+
+#: includes/class-privacy.php:176
+msgid "Depending on the SendFleet plan the site uses, messages are sent either through the site owner's own Amazon SES account, in which case SendFleet does not store recipients, subjects or bodies, or through SendFleet's managed infrastructure, in which case SendFleet keeps an email log including message content for 14 days."
+msgstr ""
+
+#: includes/class-privacy.php:177
+msgid "This site keeps its own log of sent email (recipient, sender, subject and delivery status, but not the message content) for a limited period."
+msgstr ""
+
+#. translators: %s: URL of the SendFleet privacy policy.
+#: includes/class-privacy.php:179
+#, php-format
+msgid "SendFleet privacy policy: %s"
+msgstr ""
+
+#: includes/class-queue.php:265
+msgid "The queued email could not be read back from the database."
+msgstr ""
+
+#: includes/class-queue.php:384
+msgid "Sending was interrupted (the PHP process stopped). The email may or may not have been accepted, so it was not retried."
+msgstr ""
+
+#: includes/class-site-health.php:35
+msgid "SendFleet email delivery"
+msgstr ""
+
+#: includes/class-site-health.php:49
+msgid "WordPress email is sent through SendFleet"
+msgstr ""
+
+#: includes/class-site-health.php:52
+msgid "Email"
+msgstr ""
+
+#: includes/class-site-health.php:55
+msgid "SendFleet is connected and every email WordPress sends goes through the SendFleet API."
+msgstr ""
+
+#: includes/class-site-health.php:75
+msgid "SendFleet cannot send email"
+msgstr ""
+
+#: includes/class-site-health.php:75
+msgid "SendFleet needs attention"
+msgstr ""
+
+#: includes/class-site-health.php:91
+msgid "Plugin version"
+msgstr ""
+
+#: includes/class-site-health.php:96
+msgid "Yes"
+msgstr ""
+
+#: includes/class-site-health.php:96
+msgid "No"
+msgstr ""
+
+#: includes/class-site-health.php:100
+#: includes/views/overview.php:41
+#: includes/views/overview.php:94
+#: includes/views/settings.php:33
+msgid "API key"
+msgstr ""
+
+#: includes/class-site-health.php:101
+msgid "Not set"
+msgstr ""
+
+#: includes/class-site-health.php:105
+msgid "API origin"
+msgstr ""
+
+#: includes/class-site-health.php:109
+msgid "Plan"
+msgstr ""
+
+#: includes/class-site-health.php:110
+#: includes/class-site-health.php:114
+msgid "Unknown"
+msgstr ""
+
+#: includes/class-site-health.php:113
+msgid "Usable sending domains"
+msgstr ""
+
+#: includes/class-site-health.php:117
+#: includes/views/settings.php:64
+msgid "Default sender"
+msgstr ""
+
+#: includes/class-site-health.php:121
+#: includes/views/settings.php:123
+msgid "Background sending"
+msgstr ""
+
+#: includes/class-site-health.php:122
+#: includes/class-site-health.php:126
+msgid "On"
+msgstr ""
+
+#: includes/class-site-health.php:122
+#: includes/class-site-health.php:126
+msgid "Off"
+msgstr ""
+
+#: includes/class-site-health.php:125
+msgid "WordPress fallback"
+msgstr ""
+
+#: includes/class-site-health.php:129
+msgid "Queued emails"
+msgstr ""
+
+#: includes/class-site-health.php:133
+msgid "Account data age"
+msgstr ""
+
+#: includes/class-site-health.php:134
+msgid "Never fetched"
+msgstr ""
+
+#: includes/class-site-health.php:140
+msgid "SendFleet account"
+msgstr ""
+
+#: includes/class-site-health.php:162
+msgid "None"
+msgstr ""
+
+#: includes/class-status.php:27
+msgid "The stored SendFleet API key can no longer be decrypted (the site's security salts changed). Paste the API key again in SendFleet → Settings."
+msgstr ""
+
+#: includes/class-status.php:32
+msgid "SendFleet is not connected yet, so WordPress is still sending email the default way. Add your API key to route email through SendFleet."
+msgstr ""
+
+#: includes/class-status.php:37
+msgid "Routing through SendFleet is switched off in the settings. WordPress is sending email the default way."
+msgstr ""
+
+#. translators: %s: file path.
+#: includes/class-status.php:44
+#, php-format
+msgid "Another plugin replaces WordPress' wp_mail() function (%s), so email may bypass SendFleet. Deactivate other SMTP or mailer plugins."
+msgstr ""
+
+#: includes/class-status.php:51
+msgid "SendFleet rejected the API key (it may be mistyped, revoked or expired). Create a new key in the SendFleet dashboard and save it here."
+msgstr ""
+
+#: includes/class-status.php:57
+msgid "Sending is paused or suspended on the SendFleet account."
+msgstr ""
+
+#: includes/class-status.php:62
+msgid "The monthly SendFleet plan limit is used up, so email is not being sent. Upgrade the plan or wait for the reset on the 1st (UTC)."
+msgstr ""
+
+#: includes/class-status.php:66
+msgid "The SendFleet API did not respond to a recent request. New emails are queued and sent automatically once it answers again."
+msgstr ""
+
+#. translators: %s: error detail.
+#: includes/class-status.php:72
+#, php-format
+msgid "Could not read the SendFleet account details: %s"
+msgstr ""
+
+#: includes/class-status.php:78
+msgid "The SendFleet account email address is not verified. SendFleet blocks sending until you click the verification link it emailed you."
+msgstr ""
+
+#: includes/class-status.php:82
+msgid "Your plan sends through your own AWS SES, but the BYOC IAM role is not validated yet. Finish the BYOC setup in the SendFleet dashboard (Settings → BYOC)."
+msgstr ""
+
+#: includes/class-status.php:89
+msgid "Your Managed plan sends through SendFleet's SES, but your verified domains are BYOC domains. A domain's sending mode is permanent: add a Shared SES domain in the SendFleet dashboard."
+msgstr ""
+
+#: includes/class-status.php:91
+msgid "Your BYOC plan sends through your own AWS SES, but your verified domains are Shared SES domains. Add a BYOC domain in the SendFleet dashboard."
+msgstr ""
+
+#: includes/class-status.php:93
+msgid "There is no verified sending domain on your SendFleet account yet. Add a domain in the SendFleet dashboard (Domains), publish the DNS records and verify them."
+msgstr ""
+
+#. translators: 1: configured sender, 2: sender used instead.
+#: includes/class-status.php:101
+#, php-format
+msgid "The default sender %1$s is not on a verified sending domain of your SendFleet account, so %2$s is used instead. Choose an address on one of your verified domains."
+msgstr ""
+
+#. translators: %s: SendFleet account email.
+#: includes/class-status.php:106
+#, php-format
+msgid "Free plan smoke-test mode: your only domain is a Shared SES domain, so SendFleet delivers only to your own account address (%s). That covers notifications to yourself, such as contact forms. To email anyone else, add a BYOC domain (free) or choose a Managed plan; other recipients are skipped until then."
+msgstr ""
+
+#. translators: 1: sends used, 2: plan limit.
+#: includes/class-status.php:115
+#, php-format
+msgid "You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC) unless you upgrade."
+msgstr ""
+
+#. translators: 1: sends used, 2: plan limit.
+#: includes/class-status.php:118
+#, php-format
+msgid "You have used %1$s of %2$s emails this month."
+msgstr ""
+
+#: includes/class-status.php:124
+msgid "Queued emails have been waiting for more than 15 minutes. WP-Cron does not seem to run on this site; make sure it is not disabled without a system cron job calling wp-cron.php."
+msgstr ""
+
+#: includes/class-test-email.php:29
+msgid "Routing through SendFleet is off or no API key is saved, so the test was not sent."
+msgstr ""
+
+#. translators: %s: site title.
+#: includes/class-test-email.php:57
+#, php-format
+msgid "SendFleet test email from %s"
+msgstr ""
+
+#. translators: 1: recipient, 2: sending mode, 3: message id.
+#: includes/class-test-email.php:73
+#, php-format
+msgid "SendFleet accepted the test email to %1$s (mode: %2$s, message id: %3$s). Delivery is asynchronous; check the inbox in a minute."
+msgstr ""
+
+#. translators: 1: recipient, 2: reason.
+#: includes/class-test-email.php:86
+#, php-format
+msgid "The test email to %1$s is queued and will be retried automatically: %2$s"
+msgstr ""
+
+#. translators: %s: reason.
+#: includes/class-test-email.php:97
+#, php-format
+msgid "SendFleet did not accept the test email; it was sent through WordPress' default mailer instead (fallback). %s"
+msgstr ""
+
+#. translators: 1: error code, 2: error detail.
+#: includes/class-test-email.php:106
+#, php-format
+msgid "Not sent (%1$s): %2$s"
+msgstr ""
+
+#: includes/class-test-email.php:115
+msgid "The test email could not be sent."
+msgstr ""
+
+#: includes/class-test-email.php:134
+msgid "Your test email arrived."
+msgstr ""
+
+#. translators: %s: site title.
+#: includes/class-test-email.php:136
+#, php-format
+msgid "%s is sending its email through SendFleet. Password resets, notifications, orders and form submissions now go through the same path."
+msgstr ""
+
+#. translators: %s: date and time.
+#: includes/class-test-email.php:138
+#, php-format
+msgid "Sent %s from the SendFleet WordPress plugin."
+msgstr ""
+
+#. translators: %s: human-readable time difference.
+#: includes/class-transport.php:104
+#, php-format
+msgid "Not sent: SendFleet rejected the API key %s ago. Check the key in SendFleet → Settings; sending resumes automatically once a valid key is saved."
+msgstr ""
+
+#: includes/class-transport.php:113
+msgid "Not sent: sending is paused or suspended on the SendFleet account."
+msgstr ""
+
+#: includes/class-transport.php:119
+msgid "Not sent: the monthly SendFleet plan limit is used up."
+msgstr ""
+
+#: includes/class-transport.php:129
+msgid "Waiting to retry: the SendFleet API did not respond to a recent request."
+msgstr ""
+
+#: includes/views/log.php:26
+msgid "Back to the email log"
+msgstr ""
+
+#: includes/views/log.php:28
+msgid "This log entry no longer exists."
+msgstr ""
+
+#: includes/views/log.php:40
+msgid "Created"
+msgstr ""
+
+#: includes/views/log.php:42
+#: includes/views/overview.php:113
+msgid "Updated"
+msgstr ""
+
+#: includes/views/log.php:49
+msgid "Message ID"
+msgstr ""
+
+#: includes/views/log.php:53
+msgid "Idempotency key"
+msgstr ""
+
+#: includes/views/log.php:57
+msgid "Code"
+msgstr ""
+
+#: includes/views/log.php:61
+msgid "Warnings"
+msgstr ""
+
+#: includes/views/log.php:65
+msgid "Notes"
+msgstr ""
+
+#: includes/views/log.php:70
+msgid "API attempts"
+msgstr ""
+
+#: includes/views/log.php:73
+msgid "Next attempt"
+msgstr ""
+
+#: includes/views/log.php:82
+msgid "Other recipients of this email"
+msgstr ""
+
+#: includes/views/log.php:87
+msgid "Delete this log entry?"
+msgstr ""
+
+#: includes/views/log.php:87
+msgid "Cancel and delete this queued email"
+msgstr ""
+
+#: includes/views/log.php:87
+msgid "Delete entry"
+msgstr ""
+
+#: includes/views/log.php:95
+msgid "Emails"
+msgstr ""
+
+#: includes/views/log.php:96
+msgid "Suppressions"
+msgstr ""
+
+#: includes/views/log.php:102
+msgid "The email log is off. Only queued emails are listed until they are sent."
+msgstr ""
+
+#: includes/views/log.php:118
+msgid "Search emails"
+msgstr ""
+
+#. translators: %s: number of queued emails.
+#: includes/views/log.php:129
+#, php-format
+msgid "Send %s queued email now"
+msgid_plural "Send %s queued emails now"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/views/log.php:136
+msgid "Delete every log entry? Queued emails are kept."
+msgstr ""
+
+#: includes/views/log.php:136
+msgid "Delete all log entries"
+msgstr ""
+
+#. translators: %d: days.
+#: includes/views/log.php:141
+#, php-format
+msgid "Entries are deleted automatically after %d days. Message bodies are never stored in the log."
+msgstr ""
+
+#: includes/views/log.php:154
+msgid "Hard bounce"
+msgstr ""
+
+#: includes/views/log.php:155
+msgid "Spam complaint"
+msgstr ""
+
+#: includes/views/log.php:156
+msgid "Suppressed by SendFleet"
+msgstr ""
+
+#: includes/views/log.php:157
+msgid "Added by hand"
+msgstr ""
+
+#: includes/views/log.php:160
+msgid "This site does not send to these addresses. Webhooks add hard bounces, spam complaints and SendFleet suppressions automatically."
+msgstr ""
+
+#: includes/views/log.php:166
+msgid "Email address"
+msgstr ""
+
+#: includes/views/log.php:168
+msgid "Add address"
+msgstr ""
+
+#: includes/views/log.php:173
+msgid "Search addresses"
+msgstr ""
+
+#: includes/views/log.php:174
+msgid "Search"
+msgstr ""
+
+#: includes/views/log.php:187
+msgid "Detail"
+msgstr ""
+
+#: includes/views/log.php:188
+msgid "Added"
+msgstr ""
+
+#: includes/views/log.php:193
+msgid "No suppressed addresses."
+msgstr ""
+
+#: includes/views/log.php:207
+msgid "Allow email to the selected addresses again?"
+msgstr ""
+
+#: includes/views/log.php:207
+msgid "Remove selected"
+msgstr ""
+
+#: includes/views/overview.php:22
+msgid "BYOC — your AWS SES"
+msgstr ""
+
+#: includes/views/overview.php:24
+msgid "Smoke test — your address only"
+msgstr ""
+
+#: includes/views/overview.php:36
+msgid "Send every WordPress email through SendFleet."
+msgstr ""
+
+#: includes/views/overview.php:37
+msgid "Paste an API key and wp_mail() is routed through the SendFleet API: password resets, WooCommerce orders, contact forms, notifications — all of it. Your SES or ours. No SMTP settings."
+msgstr ""
+
+#: includes/views/overview.php:47
+msgid "The key is checked against SendFleet before it is saved, and stored encrypted."
+msgstr ""
+
+#. translators: %s: sign-up URL.
+#: includes/views/overview.php:55
+#, php-format
+msgid "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Create a free SendFleet account</a> — 50 emails a month, no card."
+msgstr ""
+
+#: includes/views/overview.php:60
+msgid "Add your domain in the SendFleet dashboard (Domains), publish the DNS records and press Verify all records."
+msgstr ""
+
+#: includes/views/overview.php:61
+msgid "Create a key under API Keys, copy it (it is shown once) and paste it above."
+msgstr ""
+
+#: includes/views/overview.php:67
+msgid "Two modes, one plugin"
+msgstr ""
+
+#: includes/views/overview.php:68
+msgid "BYOC sends through your own AWS SES account — SendFleet never stores recipients, subjects or bodies. Managed plans send through SendFleet's SES with logs, webhooks and bounce handling."
+msgstr ""
+
+#: includes/views/overview.php:71
+msgid "Free plan"
+msgstr ""
+
+#: includes/views/overview.php:72
+msgid "50 emails a month. With a BYOC domain they go to anyone. With a Shared SES domain the Free plan is a smoke test that only reaches your own account address — enough for contact forms and admin notifications to yourself."
+msgstr ""
+
+#: includes/views/overview.php:75
+msgid "Nothing else to configure"
+msgstr ""
+
+#: includes/views/overview.php:76
+msgid "The sender is picked from your verified domains automatically. Cc and Bcc recipients each get their own send. Rate limits and transient errors are retried for you."
+msgstr ""
+
+#: includes/views/overview.php:87
+#: includes/views/overview.php:102
+msgid "Account"
+msgstr ""
+
+#: includes/views/overview.php:90
+msgid "Refresh"
+msgstr ""
+
+#: includes/views/overview.php:98
+msgid "(from wp-config.php)"
+msgstr ""
+
+#: includes/views/overview.php:106
+msgid "Verified"
+msgstr ""
+
+#: includes/views/overview.php:108
+msgid "Not verified"
+msgstr ""
+
+#: includes/views/overview.php:111
+msgid "BYOC role"
+msgstr ""
+
+#: includes/views/overview.php:112
+msgid "Validated"
+msgstr ""
+
+#: includes/views/overview.php:112
+msgid "Not configured"
+msgstr ""
+
+#. translators: %s: human time difference.
+#: includes/views/overview.php:117
+#, php-format
+msgid "%s ago"
+msgstr ""
+
+#: includes/views/overview.php:125
+msgid "Remove the API key? WordPress will send email the default way again."
+msgstr ""
+
+#: includes/views/overview.php:125
+msgid "Disconnect"
+msgstr ""
+
+#: includes/views/overview.php:131
+msgid "Plan and usage"
+msgstr ""
+
+#: includes/views/overview.php:144
+msgid "sends this month · no SendFleet cap"
+msgstr ""
+
+#. translators: %s: monthly limit.
+#: includes/views/overview.php:147
+#, php-format
+msgid "of %s sends this month"
+msgstr ""
+
+#: includes/views/overview.php:154
+msgid "Resets on the 1st of each month (UTC)."
+msgstr ""
+
+#: includes/views/overview.php:154
+msgid "BYOC sends and Shared smoke tests count together."
+msgstr ""
+
+#: includes/views/overview.php:161
+msgid "delivered"
+msgstr ""
+
+#: includes/views/overview.php:162
+msgid "bounced"
+msgstr ""
+
+#: includes/views/overview.php:163
+msgid "complaints"
+msgstr ""
+
+#: includes/views/overview.php:164
+msgid "rejected"
+msgstr ""
+
+#: includes/views/overview.php:167
+msgid "Manage plan in the SendFleet dashboard"
+msgstr ""
+
+#: includes/views/overview.php:169
+msgid "Account details are not available yet. Press Refresh to fetch them."
+msgstr ""
+
+#: includes/views/overview.php:174
+msgid "Sending domains"
+msgstr ""
+
+#: includes/views/overview.php:176
+msgid "Unknown until the account details load."
+msgstr ""
+
+#: includes/views/overview.php:178
+msgid "No verified domain can send on your current plan yet."
+msgstr ""
+
+#: includes/views/overview.php:179
+msgid "Add a domain in SendFleet"
+msgstr ""
+
+#. translators: %s: email address.
+#: includes/views/overview.php:192
+#, php-format
+msgid "Emails whose sender is not on one of these domains are sent from %s."
+msgstr ""
+
+#: includes/views/overview.php:194
+msgid "Change"
+msgstr ""
+
+#: includes/views/overview.php:200
+msgid "Send a test email"
+msgstr ""
+
+#: includes/views/overview.php:203
+msgid "To"
+msgstr ""
+
+#: includes/views/overview.php:206
+msgid "From"
+msgstr ""
+
+#: includes/views/overview.php:221
+msgid "Smoke-test mode delivers only to your SendFleet account address."
+msgstr ""
+
+#: includes/views/overview.php:223
+msgid "Send test email"
+msgstr ""
+
+#: includes/views/overview.php:230
+msgid "Recent email"
+msgstr ""
+
+#. translators: 1: sent count, 2: failed count, 3: queued count.
+#: includes/views/overview.php:243
+#, php-format
+msgid "Last 24 hours: %1$s sent · %2$s failed · %3$s queued"
+msgstr ""
+
+#: includes/views/overview.php:249
+msgid "The email log is switched off in the settings."
+msgstr ""
+
+#: includes/views/overview.php:251
+msgid "Nothing sent yet. Send a test email to see it here."
+msgstr ""
+
+#: includes/views/overview.php:273
+msgid "View the full email log"
+msgstr ""
+
+#. translators: 1: time ago, 2: error code, 3: detail.
+#: includes/views/overview.php:283
+#, php-format
+msgid "Last API error %1$s ago: %2$s — %3$s"
+msgstr ""
+
+#: includes/views/settings.php:30
+msgid "Connection"
+msgstr ""
+
+#: includes/views/settings.php:37
+msgid "Defined by SENDFLEET_API_KEY in wp-config.php."
+msgstr ""
+
+#: includes/views/settings.php:40
+msgid "(saved — paste a new key to replace it)"
+msgstr ""
+
+#: includes/views/settings.php:44
+msgid "Create keys in the SendFleet dashboard under API Keys. Stored encrypted. For a key kept out of the database, define SENDFLEET_API_KEY in wp-config.php."
+msgstr ""
+
+#: includes/views/settings.php:50
+msgid "Route WordPress email"
+msgstr ""
+
+#: includes/views/settings.php:52
+msgid "Send every wp_mail() email through SendFleet"
+msgstr ""
+
+#: includes/views/settings.php:53
+msgid "Untick to pause SendFleet without removing the key; WordPress then sends the default way."
+msgstr ""
+
+#: includes/views/settings.php:61
+msgid "SendFleet only sends from verified domains on your account, matched exactly (a subdomain is its own domain). When an email's sender is on one of them it is kept; otherwise the default sender below is used and the original sender becomes the Reply-To."
+msgstr ""
+
+#: includes/views/settings.php:68
+msgid "Defined by SENDFLEET_FROM_EMAIL in wp-config.php."
+msgstr ""
+
+#: includes/views/settings.php:80
+msgid "Leave empty to pick automatically once a verified domain exists."
+msgstr ""
+
+#. translators: %s: list of domains.
+#: includes/views/settings.php:83
+#, php-format
+msgid "Leave empty to pick automatically. Verified domains: %s"
+msgstr ""
+
+#: includes/views/settings.php:91
+msgid "Force sender"
+msgstr ""
+
+#: includes/views/settings.php:93
+msgid "Always send from the default sender, even when another plugin sets a verified one"
+msgstr ""
+
+#: includes/views/settings.php:97
+msgid "Sender name"
+msgstr ""
+
+#: includes/views/settings.php:101
+msgid "Defined by SENDFLEET_FROM_NAME in wp-config.php."
+msgstr ""
+
+#: includes/views/settings.php:104
+msgid "Used when an email has no sender name or WordPress' generic \"WordPress\". Defaults to the site title."
+msgstr ""
+
+#: includes/views/settings.php:106
+msgid "Always use this name"
+msgstr ""
+
+#: includes/views/settings.php:110
+msgid "Default Reply-To"
+msgstr ""
+
+#: includes/views/settings.php:113
+msgid "Optional. Used when an email has no Reply-To of its own."
+msgstr ""
+
+#: includes/views/settings.php:120
+msgid "Delivery"
+msgstr ""
+
+#: includes/views/settings.php:125
+msgid "Queue emails and send them from WP-Cron"
+msgstr ""
+
+#: includes/views/settings.php:126
+msgid "Pages that send email (checkout, forms) respond faster. Requires a working WP-Cron. Emails larger than 2 MB are still sent immediately. Retryable failures are always queued, whatever this setting."
+msgstr ""
+
+#: includes/views/settings.php:130
+msgid "Fallback"
+msgstr ""
+
+#: includes/views/settings.php:132
+msgid "If SendFleet cannot send an email, send it the default WordPress way instead"
+msgstr ""
+
+#: includes/views/settings.php:133
+msgid "Covers a rejected key, a used-up plan, an unverified domain and Free plan smoke-test recipients. Never used after a timeout, because SendFleet may already have accepted that email. Mail sent this way does not get SendFleet's deliverability."
+msgstr ""
+
+#: includes/views/settings.php:140
+msgid "Email log and suppressions"
+msgstr ""
+
+#: includes/views/settings.php:143
+msgid "Email log"
+msgstr ""
+
+#: includes/views/settings.php:145
+msgid "Keep a log of every email (recipient, sender, subject, status — never the message body)"
+msgstr ""
+
+#: includes/views/settings.php:149
+msgid "Keep entries for"
+msgstr ""
+
+#: includes/views/settings.php:151
+msgid "days"
+msgstr ""
+
+#: includes/views/settings.php:155
+msgid "Suppression list"
+msgstr ""
+
+#: includes/views/settings.php:157
+msgid "Do not send to addresses that hard-bounced, complained or were suppressed"
+msgstr ""
+
+#: includes/views/settings.php:158
+msgid "Filled automatically by webhooks (Managed plans) and by hand under Email Log → Suppressions. Saves sends from your allowance and protects your sender reputation."
+msgstr ""
+
+#: includes/views/settings.php:165
+msgid "Webhooks"
+msgstr ""
+
+#: includes/views/settings.php:165
+msgid "Managed plans"
+msgstr ""
+
+#: includes/views/settings.php:166
+msgid "Optional. Lets SendFleet report delivered, bounced and complained emails back to this log, and keeps the suppression list current. BYOC sends and Free plan smoke tests do not fire webhooks."
+msgstr ""
+
+#: includes/views/settings.php:168
+msgid "Your current plan does not deliver webhooks. You can leave this empty."
+msgstr ""
+
+#: includes/views/settings.php:172
+msgid "Endpoint URL"
+msgstr ""
+
+#: includes/views/settings.php:176
+msgid "Copy"
+msgstr ""
+
+#: includes/views/settings.php:178
+msgid "In the SendFleet dashboard go to Webhooks, add this URL and select the events you want (email.delivered, email.bounced, email.complained and email.suppressed are the useful ones). SendFleet then shows the signing secret once."
+msgstr ""
+
+#: includes/views/settings.php:182
+msgid "Signing secret"
+msgstr ""
+
+#: includes/views/settings.php:185
+msgid "Defined by SENDFLEET_WEBHOOK_SECRET in wp-config.php."
+msgstr ""
+
+#: includes/views/settings.php:187
+msgid "Saved — paste a new secret to replace it"
+msgstr ""
+
+#: includes/views/settings.php:189
+msgid "Remove the saved secret (stops accepting webhooks)"
+msgstr ""
+
+#. translators: 1: event name, 2: time ago.
+#: includes/views/settings.php:196
+#, php-format
+msgid "Last verified webhook: %1$s, %2$s ago."
+msgstr ""
+
+#: includes/views/settings.php:198
+msgid "No webhook received yet."
+msgstr ""
+
+#: includes/views/settings.php:207
+msgid "Save settings"
+msgstr ""
+
+#: includes/views/settings.php:211
+msgid "wp-config.php constants"
+msgstr ""
+
+#: includes/views/settings.php:212
+msgid "Pin settings in code for staging and production deployments. Constants override the fields above."
+msgstr ""
