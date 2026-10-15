@@ -150,6 +150,7 @@ composer lint:fix         # vendor/bin/phpcbf
 
 docker compose up -d      # WordPress on :8088, Mailpit on :8025, mock API inside the network
 bash tests/e2e/run.sh     # install, activate, run every scenario
+bash tests/e2e/run.sh down  # tear down containers and volumes
 ```
 
 Log in at http://localhost:8088/wp-admin (admin / admin). Test keys accepted by the mock (`<prefix>.` followed by 32 × `a`):
@@ -181,6 +182,6 @@ Special recipients on the mock: `fail502@…`, `flaky502@…`, `fail500@…`, `t
 2. Regenerate the translation template if strings changed:
    `wp i18n make-pot . languages/sendfleet.pot --slug=sendfleet --exclude=vendor,tests,build,dist,bin,node_modules`
 3. Commit, then tag with the bare version and push: `git tag 1.0.1 && git push origin main 1.0.1`.
-4. `.github/workflows/release.yml` builds the zip, deploys it to WordPress.org SVN (trunk + tag + assets) and attaches it to a GitHub release. It needs the `SVN_USERNAME` and `SVN_PASSWORD` repository secrets.
+4. `.github/workflows/release.yml` runs CI's lint and end-to-end checks and, only if they pass, builds the zip, deploys it to WordPress.org SVN (trunk + tag + assets) and attaches it to a GitHub release. It needs the `SVN_USERNAME` and `SVN_PASSWORD` repository secrets.
 
 License: GPL-2.0-or-later.

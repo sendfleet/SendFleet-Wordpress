@@ -183,7 +183,7 @@ final class Api_Response {
 	 * The machine-readable error code.
 	 *
 	 * Uses the API's `error` field when present, and otherwise names the
-	 * documented shapes that carry no code (a bare 403 is a key problem, a
+	 * shapes the API answers without a code (a bare 403 is a key problem, a
 	 * bare 429 is the per-key rate limit, a 400 is a validation failure).
 	 *
 	 * @return string '' on success.
@@ -205,6 +205,12 @@ final class Api_Response {
 			return (string) $this->body['error'];
 		}
 
+		// Plugin-local labels, not API contract codes: the API documents its `error`
+		// codes but answers these statuses without one, and these strings are never
+		// sent anywhere or matched against the documentation. Transport::observe()
+		// keys its breakers off them, so `invalid_api_key` is load-bearing: it is
+		// the only way a bare 403 — a key the API refuses to name — opens the auth
+		// breaker that stops further calls from this IP.
 		switch ( $this->status ) {
 			case 400:
 				return 'validation_error';

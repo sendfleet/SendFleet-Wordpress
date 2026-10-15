@@ -1,19 +1,40 @@
 name: Release to WordPress.org
 
 # Push a tag that matches the plugin version (e.g. `git tag 1.0.1 && git push origin 1.0.1`).
+# Only version-shaped tags trigger this workflow; anything else (a nightly or a
+# scratch tag) must not reach WordPress.org.
 # Requires the repository secrets SVN_USERNAME and SVN_PASSWORD (your WordPress.org
 # username and its SVN password from https://profiles.wordpress.org/me/profile/edit/group/3/?screen=svn-password).
 
 on:
   push:
     tags:
-      - "*"
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
   contents: write
 
 jobs:
+  # The same checks ci.yml runs, so a tag never deploys code CI would reject.
+  checks:
+    name: Lint and end-to-end
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+          tools: composer
+      - run: find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+      - run: composer install --no-interaction --no-progress
+      - run: vendor/bin/phpcs
+      - run: bash tests/e2e/run.sh
+      - if: always()
+        run: bash tests/e2e/run.sh down
+
   release:
+    needs: checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

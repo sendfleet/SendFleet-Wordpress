@@ -62,6 +62,17 @@ final class Log {
 	}
 
 	/**
+	 * Rows deleted per retention purge batch.
+	 */
+	const PURGE_BATCH = 5000;
+
+	/**
+	 * Seconds one purge may spend before leaving the rest of the backlog to the
+	 * next hourly run, so a large backlog cannot stall WP-Cron.
+	 */
+	const PURGE_BUDGET = 20;
+
+	/**
 	 * Column defaults, so every insert supplies every NOT NULL column.
 	 *
 	 * @return array
@@ -363,16 +374,28 @@ final class Log {
 	/**
 	 * Deletes finished rows older than the retention period.
 	 *
+	 * Runs in batches until the backlog is gone or the time budget is spent,
+	 * so the retention horizon is actually reached on a busy site and a large
+	 * backlog still cannot run past the cron window.
+	 *
 	 * @param int $days Retention in days.
 	 * @return int Rows deleted.
 	 */
 	public static function purge_older_than( $days ) {
 		global $wpdb;
 
-		$table  = Installer::log_table();
-		$cutoff = gmdate( 'Y-m-d H:i:s', time() - max( 1, (int) $days ) * DAY_IN_SECONDS );
+		$table    = Installer::log_table();
+		$cutoff   = gmdate( 'Y-m-d H:i:s', time() - max( 1, (int) $days ) * DAY_IN_SECONDS );
+		$deadline = time() + self::PURGE_BUDGET;
+		$deleted  = 0;
 
-		return (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE created_at < %s AND status NOT IN (%s, %s) LIMIT 5000', $table, $cutoff, self::STATUS_QUEUED, self::STATUS_SENDING ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+		do {
+			$batch = (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE created_at < %s AND status NOT IN (%s, %s) LIMIT %d', $table, $cutoff, self::STATUS_QUEUED, self::STATUS_SENDING, self::PURGE_BATCH ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+
+			$deleted += $batch;
+		} while ( $batch > 0 && time() < $deadline );
+
+		return $deleted;
 	}
 
 	/**

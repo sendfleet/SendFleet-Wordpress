@@ -170,6 +170,12 @@ final class Queue {
 	/**
 	 * Ensures a queue run is scheduled no later than $when.
 	 *
+	 * The new event is written before the old one is dropped, so a failure
+	 * between the two writes leaves the hook with an event rather than with
+	 * none. WordPress refuses a single event that duplicates one scheduled
+	 * within ten minutes, so dropping the old event is followed by a repair in
+	 * case that refusal left the hook empty.
+	 *
 	 * @param int $when Unix time.
 	 * @return void
 	 */
@@ -181,11 +187,15 @@ final class Queue {
 			return;
 		}
 
+		wp_schedule_single_event( $when, Installer::CRON_QUEUE );
+
 		if ( false !== $next ) {
 			wp_unschedule_event( $next, Installer::CRON_QUEUE );
 		}
 
-		wp_schedule_single_event( $when, Installer::CRON_QUEUE );
+		if ( false === wp_next_scheduled( Installer::CRON_QUEUE ) ) {
+			wp_schedule_single_event( $when, Installer::CRON_QUEUE );
+		}
 
 		if ( $when <= time() + 5 && ! self::$spawn ) {
 			self::$spawn = true;

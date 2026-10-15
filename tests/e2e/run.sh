@@ -3,7 +3,7 @@
 # End-to-end test run: WordPress + MariaDB + the mock SendFleet API + Mailpit.
 #
 #   bash tests/e2e/run.sh          # start everything, install, run the scenarios
-#   docker compose down -v         # tear down afterwards
+#   bash tests/e2e/run.sh down     # tear down afterwards
 #
 # Requires Docker with the compose plugin. Never touches api.sendfleet.net:
 # WordPress is pointed at the mock through SENDFLEET_API_URL.
@@ -15,6 +15,14 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 DC=(docker compose)
 if ! docker info >/dev/null 2>&1; then
 	DC=(sudo docker compose)
+fi
+
+# Teardown goes through this script so it resolves docker the same way the run
+# did; calling `docker compose down` directly leaks everything when the runner
+# needs sudo.
+if [ "${1:-}" = "down" ]; then
+	"${DC[@]}" down -v
+	exit 0
 fi
 
 wp() {

@@ -138,13 +138,9 @@ final class Webhooks {
 		$body = (string) $request->get_body();
 
 		if ( ! self::verify( $body, (string) $request->get_header( 'x_sendfleet_signature' ), $secret ) ) {
-			State::set(
-				'webhook_rejected',
-				array(
-					'time' => time(),
-				)
-			);
-
+			// Nothing is recorded here on purpose. This endpoint is public, so any state
+			// written per bad signature is a write amplifier: the options row is autoloaded,
+			// so it would be re-read and re-written for as long as an attacker keeps posting.
 			return new \WP_REST_Response(
 				array(
 					'ok'    => false,
