@@ -14,9 +14,11 @@ defined( 'ABSPATH' ) || exit;
  *
  * The recipients of one wp_mail() call go out as one SendFleet request — `to`,
  * `cc` and `bcc` together, at most 50 per message (SendFleet's and SES's
- * limit; more are split across several messages). Each recipient still gets
- * its own log row, because SendFleet counts, logs and reports every recipient
- * separately.
+ * limit; more are split across several messages). At most one recipient is
+ * carried in `to`; a Shared SES message is addressed to exactly one recipient,
+ * so any others are sent as `cc`, which is where WordPress puts them natively.
+ * Each recipient still gets its own log row, because SendFleet counts, logs
+ * and reports every recipient separately.
  *
  * Per recipient the outcome is one of:
  *
@@ -29,7 +31,10 @@ defined( 'ABSPATH' ) || exit;
 final class Dispatcher {
 
 	/**
-	 * Recipients per message: SendFleet's limit, which is SES's.
+	 * Recipients per message: SendFleet's ceiling, which on BYOC is SES's own.
+	 * A Shared SES domain is capped far lower and at one address in `to`, but
+	 * the ceiling is not known here, so this stays the BYOC figure and the
+	 * shape is what every path accepts.
 	 */
 	const MAX_RECIPIENTS = 50;
 
@@ -98,11 +103,19 @@ final class Dispatcher {
 	/**
 	 * Splits the recipients into messages.
 	 *
-	 * At most 50 per message. A message needs a `to`, so a chunk left with
-	 * only Cc and Bcc recipients (every `to` was skipped) sends each of them
-	 * as their own message's `to` — which also keeps a Bcc recipient out of
-	 * every header. While SendFleet answers that several recipients are not
-	 * available on this account yet, every recipient is its own message.
+	 * At most 50 per message, and at most one of them in `to`. A message
+	 * addressed to a Shared SES domain is addressed to exactly one recipient —
+	 * SendFleet refuses a list in `to` there with `recipient_limit_exceeded` —
+	 * so the rest are demoted to `cc`, which is where WordPress puts them
+	 * natively when `wp_mail()` is handed several addresses: the first is the
+	 * `To` header and the remainder become `Cc`. The mail is unchanged; only
+	 * which header a name appears under is.
+	 *
+	 * A chunk left with only Cc and Bcc recipients (every `to` was skipped)
+	 * sends each of them as their own message's `to`, which also keeps a Bcc
+	 * recipient out of every header. While SendFleet answers that several
+	 * recipients are not available on this account at all, every recipient is
+	 * its own message.
 	 *
 	 * @param array[] $recipients Envelope recipient entries.
 	 * @return array[] Groups of entries with email and kind.
@@ -119,7 +132,7 @@ final class Dispatcher {
 			$kinds = wp_list_pluck( $chunk, 'kind' );
 
 			if ( in_array( 'to', $kinds, true ) ) {
-				$groups[] = $chunk;
+				$groups[] = self::one_address_in_to( $chunk );
 				continue;
 			}
 
@@ -130,6 +143,29 @@ final class Dispatcher {
 		}
 
 		return $groups;
+	}
+
+	/**
+	 * Keeps the first `to` and moves any others to `cc`.
+	 *
+	 * @param array[] $chunk Recipient entries.
+	 * @return array[]
+	 */
+	private static function one_address_in_to( array $chunk ) {
+		$kept = false;
+
+		foreach ( $chunk as $index => $member ) {
+			if ( 'to' !== $member['kind'] ) {
+				continue;
+			}
+			if ( ! $kept ) {
+				$kept = true;
+				continue;
+			}
+			$chunk[ $index ]['kind'] = 'cc';
+		}
+
+		return $chunk;
 	}
 
 	/**

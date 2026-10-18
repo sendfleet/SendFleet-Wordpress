@@ -159,11 +159,14 @@ sf_check( 'one log row per recipient with its kind', 3 === count( $rows ) && 'to
 sf_check( 'the rows share the message id', 1 === count( array_unique( wp_list_pluck( $rows, 'message_id' ) ) ) && 1 === count( array_unique( wp_list_pluck( $rows, 'mail_id' ) ) ) );
 sf_check( 'cached usage counts every recipient', 3 === Account::used(), (string) Account::used() );
 
-// Several To recipients: a list.
+// Several To recipients: one message, but only one address in To. A Shared
+// SES domain is addressed to exactly one recipient, and WordPress itself puts
+// the extra addresses in Cc when wp_mail() is handed a list.
 sf_reset_mock();
-wp_mail( array( 'one@gmail.com', 'two@gmail.com' ), 'Two', 'Body' );
+wp_mail( array( 'one@gmail.com', 'two@gmail.com', 'three@gmail.com' ), 'Two', 'Body' );
 $b = sf_requests()[0]['body'];
-sf_check( 'several to addresses go as a list in one request', 1 === count( sf_requests() ) && array( 'one@gmail.com', 'two@gmail.com' ) === $b['to'] && ! isset( $b['cc'] ), wp_json_encode( $b['to'] ) );
+sf_check( 'several to addresses go as one request, one in To', 1 === count( sf_requests() ) && 'one@gmail.com' === $b['to'], wp_json_encode( $b['to'] ) );
+sf_check( 'the rest of the To list is sent as Cc', array( 'two@gmail.com', 'three@gmail.com' ) === $b['cc'] && ! isset( $b['bcc'] ), wp_json_encode( $b['cc'] ) );
 
 // More than 50 recipients: split into messages of at most 50. On the paid BYOC
 // plan, because every recipient counts against the free plan's 50.
@@ -176,6 +179,7 @@ $ok   = wp_mail( 'lead@gmail.com', 'Many', 'Body', array( 'Bcc: ' . implode( ', 
 $reqs = sf_requests();
 $first = $reqs[0]['body'];
 sf_check( 'the first 50 recipients go as one message', true === $ok && 'lead@gmail.com' === $first['to'] && 49 === count( $first['bcc'] ), (string) count( $reqs ) );
+sf_check( 'no message ever carries more than one address in To', 0 === count( array_filter( $reqs, static function ( $r ) { return is_array( $r['body']['to'] ) && 1 < count( $r['body']['to'] ); } ) ), wp_json_encode( array_map( static function ( $r ) { return $r['body']['to']; }, $reqs ) ) );
 $rest = array_map( static function ( $r ) { return $r['body']['to']; }, array_slice( $reqs, 1 ) );
 sf_check( 'the remaining Bcc-only chunk goes one message each, as To', array( 'many49@gmail.com', 'many50@gmail.com', 'many51@gmail.com', 'many52@gmail.com' ) === $rest && ! isset( $reqs[1]['body']['bcc'] ), wp_json_encode( $rest ) );
 sf_check( 'every recipient logged', 54 === count( array_filter( sf_rows(), static function ( $r ) { return 'Many' === $r['subject']; } ) ) );

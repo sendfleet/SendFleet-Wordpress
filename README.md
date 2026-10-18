@@ -32,7 +32,7 @@ wp_mail()
   └─ pre_wp_mail filter ─────────────── Mailer            (skips when not connected or routing is off)
        └─ Message_Builder                (header parsing, wp_mail_* filters, phpmailer_init — exactly as core)
             └─ Envelope                  (verified sender, Reply-To, smoke-test rules, attachments, one entry per To/Cc/Bcc)
-                 └─ Dispatcher           (one message per ≤50 recipients, one log row per recipient)
+                 └─ Dispatcher           (one message per ≤50 recipients, one in To, one log row per recipient)
                       ├─ Transport ─── POST /v1/send   (circuit breakers, short inline retries)
                       ├─ Queue ─────── WP-Cron         (rate limits, 502/500 retries, background sending)
                       ├─ Fallback ──── PHPMailer       (optional)
@@ -47,7 +47,7 @@ Key decisions:
 |---|---|
 | `pre_wp_mail` instead of redefining `wp_mail()` | No conflict with plugins that only filter mail; WordPress keeps owning the function. |
 | Rebuild the message with a PHPMailer subclass and fire `phpmailer_init` | Plugins that customise PHPMailer (WooCommerce's AltBody, BCC-everything plugins) keep working. The object is read back and sent through the API instead of `mail()`. |
-| One request per email, To + Cc + Bcc together | The API sends one message to up to 50 recipients (SES's limit); longer lists are split. Each recipient still gets its own log row, because SendFleet counts, logs and reports every recipient separately. A queued email's first row carries the payload and its other rows follow it. If the API answers that several recipients are not available on the account yet, the plugin sends each recipient alone for 12 hours. |
+| One request per email, To + Cc + Bcc together | The API sends one message to up to 50 recipients on a BYOC domain; longer lists are split. On a Shared SES domain a message is addressed to exactly one recipient, so the plugin keeps the first address in To and sends any others as Cc, which is what WordPress does natively — and the API's 5-recipient ceiling applies. Each recipient still gets its own log row, because SendFleet counts, logs and reports every recipient separately. A queued email's first row carries the payload and its other rows follow it. If the API answers that several recipients are not available on the account yet, the plugin sends each recipient alone for 12 hours. |
 | Sender replaced only when its domain cannot send | The API matches the sender's domain exactly; a non-verified sender would be a guaranteed 403. The original sender becomes Reply-To. |
 | Free plan smoke test handled locally | A Shared domain on the Free plan only reaches the account address. Other recipients are skipped without an API call; a foreign Reply-To is moved into the body (contact forms), the sender name is stripped of `< > @ , ; "`. |
 | Retry classes from the API's documented strategy | 429 (rate limit) → wait for the window; 502 `queue_error` / connection failures → backoff, 5 attempts; 500 → one retry; timeouts → **never** retried (the email may have been accepted). |

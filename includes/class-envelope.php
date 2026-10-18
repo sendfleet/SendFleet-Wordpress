@@ -12,7 +12,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * The message after SendFleet's sending rules are applied: a sender on a
  * verified domain, one entry per recipient (To, Cc and Bcc, de-duplicated;
- * the Dispatcher sends them together, up to 50 per message), attachments that
+ * the Dispatcher sends them together, up to 50 per message, and never more
+ * than one in To), attachments that
  * will pass validation, and the Free plan smoke-test restrictions.
  */
 final class Envelope {

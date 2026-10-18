@@ -22,7 +22,7 @@ This is the official SendFleet plugin. It routes every email WordPress sends —
 
 * **Takes over wp_mail() cleanly.** Uses WordPress' `pre_wp_mail` filter rather than replacing the pluggable function, and builds each message exactly like WordPress does, so `wp_mail_from`, `wp_mail_content_type`, `phpmailer_init` and every other mail filter keep working (WooCommerce's plain-text alternative included).
 * **Always sends from a verified domain.** If a plugin sets a sender on a domain your SendFleet account cannot send from, the plugin sends from your default sender instead and puts the original address in Reply-To, so replies still reach the right person.
-* **To, Cc and Bcc.** Each email goes out as one SendFleet message with its To, Cc and Bcc recipients (up to 50 per message; larger lists are split). Every recipient appears in the log on their own row.
+* **To, Cc and Bcc.** Each email goes out as one SendFleet message with its To, Cc and Bcc recipients (up to 50 per message on a BYOC domain; larger lists are split). On a Shared SES domain a message is addressed to exactly one recipient, so the first address stays in To and the rest are sent as Cc, and the API's 5-recipient ceiling applies. Every recipient appears in the log on their own row.
 * **HTML and plain text.** A readable plain-text version is generated for HTML-only emails, as SendFleet recommends.
 * **Attachments.** Checked against SendFleet's limits (20 files, 25 MB each, 37 MB in total, no executables). A file that would be refused is left out and noted in the log, rather than failing the whole email.
 * **Retries done right.** Rate limits (60 requests a minute per key), `502 queue_error` and other failures where SendFleet confirms nothing was sent are retried automatically from a queue. A timeout is never retried automatically, because the email may already have been accepted and a retry could deliver it twice.
@@ -88,7 +88,7 @@ On the Free plan, a Shared SES domain only delivers to your own SendFleet accoun
 
 = How are Cc and Bcc handled? =
 
-As in any email: one message, with the Cc addresses visible to everyone and the Bcc addresses visible to nobody. SendFleet accepts up to 50 recipients per message, so a longer list is split into several messages. Each recipient counts as one send against your SendFleet allowance, and on the Free plan's Shared SES smoke test only your own address can receive, so Cc and Bcc recipients are skipped there.
+As in any email: one message, with the Cc addresses visible to everyone and the Bcc addresses visible to nobody. SendFleet accepts up to 50 recipients per message on a BYOC domain, so a longer list is split into several messages. On a Shared SES domain the limit is 5 recipients and the message is addressed to exactly one of them, with the rest as Cc. Each recipient counts as one send against your SendFleet allowance, and on the Free plan's Shared SES smoke test only your own address can receive, so Cc and Bcc recipients are skipped there.
 
 = What happens when SendFleet is unreachable or rate-limits me? =
 

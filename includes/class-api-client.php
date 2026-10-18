@@ -12,7 +12,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Thin client over the two public endpoints:
  *
- * - POST /v1/send  One message per request, carrying its To, Cc and Bcc recipients (up to 50).
+ * - POST /v1/send  One message per request, carrying its To, Cc and Bcc
+ *   recipients (up to 50 on BYOC; a Shared SES domain takes one address in
+ *   `to` and 5 in total, and the Dispatcher keeps to that shape).
  * - GET  /v1/me    Account, plan, usage and verified domains.
  *
  * Authentication is the `X-API-Key` header. Redirects are never followed so
