@@ -38,7 +38,7 @@ final class Account {
 	const ROUTE_SMOKE = 'smoke';
 
 	/**
-	 * Plan keys, display names and monthly limits (null = no SendFleet cap).
+	 * Plan keys, display names and monthly limits. Every plan has a SendFleet cap.
 	 *
 	 * @return array
 	 */
@@ -51,7 +51,7 @@ final class Account {
 			),
 			'byoc'            => array(
 				'label'   => __( 'BYOC', 'sendfleet' ),
-				'limit'   => null,
+				'limit'   => 1000000,
 				'managed' => false,
 			),
 			'managed_starter' => array(
@@ -335,7 +335,7 @@ final class Account {
 	}
 
 	/**
-	 * Monthly send limit, or null when SendFleet applies no cap.
+	 * Monthly send limit, or null when the plan is not one this version knows.
 	 *
 	 * @return int|null
 	 */

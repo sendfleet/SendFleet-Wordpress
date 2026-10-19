@@ -816,18 +816,24 @@ msgid "Free plan smoke-test mode: your only domain is a Shared SES domain, so Se
 msgstr ""
 
 #. translators: 1: sends used, 2: plan limit.
-#: includes/class-status.php:115
+#: includes/class-status.php:116
+#, php-format
+msgid "You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC). For a higher limit, email support@sendfleet.net with your monthly volume."
+msgstr ""
+
+#. translators: 1: sends used, 2: plan limit.
+#: includes/class-status.php:119
 #, php-format
 msgid "You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC) unless you upgrade."
 msgstr ""
 
 #. translators: 1: sends used, 2: plan limit.
-#: includes/class-status.php:118
+#: includes/class-status.php:123
 #, php-format
 msgid "You have used %1$s of %2$s emails this month."
 msgstr ""
 
-#: includes/class-status.php:124
+#: includes/class-status.php:129
 msgid "Queued emails have been waiting for more than 15 minutes. WP-Cron does not seem to run on this site; make sure it is not disabled without a system cron job calling wp-cron.php."
 msgstr ""
 
@@ -1168,7 +1174,7 @@ msgid "Plan and usage"
 msgstr ""
 
 #: includes/views/overview.php:144
-msgid "sends this month · no SendFleet cap"
+msgid "sends this month"
 msgstr ""
 
 #. translators: %s: monthly limit.

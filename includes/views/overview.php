@@ -141,7 +141,7 @@ $sendfleet_mode_name = array(
 						<span class="sf-stat__label">
 							<?php
 							if ( null === $sendfleet_limit ) {
-								esc_html_e( 'sends this month · no SendFleet cap', 'sendfleet' );
+								esc_html_e( 'sends this month', 'sendfleet' );
 							} else {
 								/* translators: %s: monthly limit. */
 								echo esc_html( sprintf( __( 'of %s sends this month', 'sendfleet' ), number_format_i18n( $sendfleet_limit ) ) );

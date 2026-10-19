@@ -162,6 +162,7 @@ Log in at http://localhost:8088/wp-admin (admin / admin). Test keys accepted by 
 | `paid0001` | BYOC plan |
 | `mngd0001` | Managed Growth (`mail.example.com`), webhooks |
 | `quota001` | Free plan, quota used up |
+| `bqta0001` | BYOC plan, 1,000,000 quota used up |
 | `unvr0001` | Account email not verified |
 | `susp0001` | Sending suspended |
 

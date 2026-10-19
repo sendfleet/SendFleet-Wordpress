@@ -448,6 +448,16 @@ sf_check( 'quota exhausted: failed with usage_limit_exceeded', false === $ok && 
 sf_check( 'second send blocked locally (one API call only)', false === $ok2 && 1 === count( sf_requests() ) && 'usage_limit_exceeded' === $rows[1]['error_code'] && 0 === (int) $rows[1]['attempts'], (string) count( sf_requests() ) );
 sf_check( 'quota issue reported', in_array( 'quota', wp_list_pluck( SendFleet\Status::issues(), 'id' ), true ) );
 
+// Paid BYOC is capped too, and at its cap there is no larger plan to upgrade to.
+sf_use_key( 'bqta0001' );
+sf_check( 'paid BYOC is capped at 1,000,000', 1000000 === Account::limit(), wp_json_encode( Account::limit() ) );
+$sendfleet_reached = wp_list_filter( SendFleet\Status::issues(), array( 'id' => 'quota_reached' ) );
+$sendfleet_reached = reset( $sendfleet_reached );
+sf_check( 'paid BYOC at its cap is pointed at support, not an upgrade', $sendfleet_reached && false !== strpos( $sendfleet_reached['message'], 'support@sendfleet.net' ) && false === strpos( $sendfleet_reached['message'], 'upgrade' ), $sendfleet_reached ? $sendfleet_reached['message'] : 'no quota_reached issue' );
+$ok   = wp_mail( 'x@gmail.com', 'BQ1', 'Body' );
+$rows = sf_rows();
+sf_check( 'paid BYOC at its cap: failed with usage_limit_exceeded', false === $ok && 'usage_limit_exceeded' === $rows[0]['error_code'], wp_json_encode( $rows ) );
+
 sf_use_key( 'byoc0001' );
 Settings::update( array( 'api_key' => Crypto::encrypt( sf_key( 'revoked1' ) ) ) );
 sf_reset_mock();

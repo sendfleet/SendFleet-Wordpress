@@ -79,7 +79,7 @@ final class Cli {
 			),
 			array(
 				'field' => 'usage',
-				'value' => Account::used() . ' / ' . ( null === $limit ? 'unlimited' : $limit ),
+				'value' => Account::used() . ' / ' . ( null === $limit ? 'unknown' : $limit ),
 			),
 			array(
 				'field' => 'domains',

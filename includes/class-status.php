@@ -111,8 +111,13 @@ final class Status {
 		if ( null !== $limit && ! $quota ) {
 			$used = Account::used();
 			if ( $used >= $limit ) {
-				/* translators: 1: sends used, 2: plan limit. */
-				$issues[] = self::issue( 'quota_reached', 'error', sprintf( __( 'You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC) unless you upgrade.', 'sendfleet' ), number_format_i18n( $used ), number_format_i18n( $limit ) ) );
+				if ( 'byoc' === Account::plan() ) {
+					/* translators: 1: sends used, 2: plan limit. */
+					$issues[] = self::issue( 'quota_reached', 'error', sprintf( __( 'You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC). For a higher limit, email support@sendfleet.net with your monthly volume.', 'sendfleet' ), number_format_i18n( $used ), number_format_i18n( $limit ) ) );
+				} else {
+					/* translators: 1: sends used, 2: plan limit. */
+					$issues[] = self::issue( 'quota_reached', 'error', sprintf( __( 'You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC) unless you upgrade.', 'sendfleet' ), number_format_i18n( $used ), number_format_i18n( $limit ) ) );
+				}
 			} elseif ( $used >= 0.9 * $limit ) {
 				/* translators: 1: sends used, 2: plan limit. */
 				$issues[] = self::issue( 'quota_near', 'warning', sprintf( __( 'You have used %1$s of %2$s emails this month.', 'sendfleet' ), number_format_i18n( $used ), number_format_i18n( $limit ) ) );
