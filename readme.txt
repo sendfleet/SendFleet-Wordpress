@@ -12,9 +12,9 @@ Send every WordPress email through SendFleet: your own Amazon SES or SendFleet's
 
 == Description ==
 
-SendFleet is a transactional email API with two sending modes: **BYOC** sends through your own Amazon SES account, so SendFleet never stores your recipients, subjects or message bodies, and **Managed** plans send through SendFleet's own SES with email logs, delivery webhooks and automatic bounce handling.
+This is the official WordPress plugin for [SendFleet](https://sendfleet.net/), a transactional email API built for developers. It routes every email WordPress sends — password resets, new-user emails, WooCommerce orders, contact form submissions, comment notifications, anything that calls `wp_mail()` — through the SendFleet API instead of PHP `mail()` or SMTP.
 
-This is the official SendFleet plugin. It routes every email WordPress sends — password resets, new-user emails, WooCommerce orders, contact form submissions, comment notifications, anything that calls `wp_mail()` — through the SendFleet API instead of PHP `mail()` or SMTP.
+SendFleet has two sending modes: **BYOC** sends through your own Amazon SES account, so SendFleet never stores your recipients, subjects or message bodies, and **Managed** plans send through SendFleet's own SES with email logs, delivery webhooks and automatic bounce handling.
 
 **Setup is one field.** Paste your API key. The plugin checks it, reads your plan and verified sending domains from SendFleet, and picks a sender address on one of those domains automatically. There are no SMTP hosts, ports or passwords to configure.
 
