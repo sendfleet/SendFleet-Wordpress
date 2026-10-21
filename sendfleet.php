@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name:       SendFleet
+ * Plugin Name:       SendFleet – Amazon SES Transactional Email API (No SMTP)
  * Plugin URI:        https://docs.sendfleet.net/
- * Description:       Routes every email WordPress sends through the SendFleet API — your own AWS SES (BYOC) or SendFleet's managed SES. Paste an API key and wp_mail() is handled.
+ * Description:       Sends every WordPress and WooCommerce email through Amazon SES over the SendFleet REST API instead of SMTP: your own AWS account (BYOC, no email content kept by SendFleet) or SendFleet's managed SES. Paste an API key and wp_mail() is handled.
  * Version:           1.0.0
  * Requires at least: 6.2
  * Requires PHP:      7.4
