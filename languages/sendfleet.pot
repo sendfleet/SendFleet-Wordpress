@@ -16,7 +16,7 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: sendfleet.php
-msgid "SendFleet – Amazon SES Transactional Email API (No SMTP)"
+msgid "SendFleet – Transactional Email API"
 msgstr ""
 
 #. Author of the plugin
@@ -34,7 +34,7 @@ msgstr ""
 
 #. Description of the plugin
 #: sendfleet.php
-msgid "Sends every WordPress and WooCommerce email through Amazon SES over the SendFleet REST API instead of SMTP: your own AWS account (BYOC, no email content kept by SendFleet) or SendFleet's managed SES. Paste an API key and wp_mail() is handled."
+msgid "Sends every email WordPress sends through the SendFleet API, on SendFleet's managed SES or your own (BYOC). Paste an API key and wp_mail() is handled. No SMTP settings."
 msgstr ""
 
 #. Author URI of the plugin

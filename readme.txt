@@ -1,6 +1,6 @@
-=== SendFleet – Amazon SES Transactional Email API (No SMTP) ===
+=== SendFleet – Transactional Email API ===
 Contributors: sendfleet
-Tags: amazon ses, aws ses, smtp, transactional email, email deliverability
+Tags: email, smtp, transactional email, wp mail, amazon ses
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -8,56 +8,53 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Fix WordPress email deliverability with Amazon SES over a REST API, not SMTP. BYOC mode sends from your own AWS account and keeps no email content.
+Send every WordPress email through SendFleet. Paste one API key: no SMTP settings, no AWS account. Free to try, plans from $5 a month.
 
 == Description ==
 
-This is the official WordPress plugin for [SendFleet](https://sendfleet.net/), a transactional email REST API on top of Amazon SES. It routes every email WordPress sends through the SendFleet API instead of PHP `mail()` or an SMTP server: password resets, new-user emails, WooCommerce order and transaction emails, contact form submissions, comment notifications, and anything else that calls `wp_mail()`.
+This is the official WordPress plugin for [SendFleet](https://sendfleet.net/), a transactional email API. It sends every email your site sends through SendFleet instead of PHP `mail()` or SMTP: password resets, new-user emails, WooCommerce orders, contact form submissions, comment notifications, and anything else that calls `wp_mail()`.
 
-You get Amazon SES delivery and AWS pricing without SMTP credentials, AWS access keys or an AWS SDK on your server. Setup is one field: paste an API key. The plugin checks it, reads your plan and verified sending domains from SendFleet, and picks a sender address on one of those domains automatically.
+**Setup is one field.** Paste your API key. The plugin checks it, reads your plan and verified sending domains from SendFleet, and picks a sender address on one of those domains automatically. There are no SMTP hosts, ports or passwords to configure.
 
-= Why SendFleet =
+= Your SES or ours =
 
-* **Bring Your Own Cloud (BYOC): your AWS SES account, your data.** On a BYOC domain, mail is sent from your own Amazon SES account. SendFleet keeps no copy of recipients, subjects or message bodies. They exist only in transit and in your SES account. Your sender reputation is yours alone, not shared with other customers.
-* **No AWS keys in WordPress.** SendFleet sends through an IAM role you create in your AWS account, using short-lived credentials. No long-lived AWS access key is stored in WordPress or by SendFleet, and you can revoke the role from your AWS console at any time.
-* **AWS SES pricing behind a clean API.** BYOC is a flat $9 a month for up to 1,000,000 emails, and you pay AWS directly for SES at AWS's own rates (from $0.10 per 1,000 emails). Free BYOC includes 50 emails a month with no card.
-* **A REST API, not SMTP.** One HTTPS call per email (`POST /v1/send`). No SMTP host, port, password or TLS settings to get wrong, and no open SMTP connection for your host to block.
-* **No AWS account? Use Managed.** Managed plans send through SendFleet's own Amazon SES, with email logs, delivery webhooks and automatic bounce and complaint handling. Nothing to set up in AWS.
+SendFleet has two sending modes. The plugin works the same way with both.
+
+* **Managed.** SendFleet handles everything. There is no AWS account to set up: verify your domain with a few DNS records and you are sending. Email logs, delivery webhooks and bounce and complaint handling are included. From $5 a month for 5,000 emails.
+* **BYOC (bring your own SES).** Email goes out through your own Amazon SES account, and SendFleet never stores your recipients, subjects or message bodies. Free for 50 emails a month, or $9 a month for up to 1,000,000. Amazon bills you for SES separately.
 
 = What it does for you =
 
 * **Takes over wp_mail() cleanly.** Uses WordPress' `pre_wp_mail` filter rather than replacing the pluggable function, and builds each message exactly like WordPress does, so `wp_mail_from`, `wp_mail_content_type`, `phpmailer_init` and every other mail filter keep working (WooCommerce's plain-text alternative included).
 * **Always sends from a verified domain.** If a plugin sets a sender on a domain your SendFleet account cannot send from, the plugin sends from your default sender instead and puts the original address in Reply-To, so replies still reach the right person.
-* **To, Cc and Bcc.** Each email goes out as one SendFleet message with its To, Cc and Bcc recipients (up to 50 per message on a BYOC domain; larger lists are split). On a Shared SES domain a message is addressed to exactly one recipient, so the first address stays in To and the rest are sent as Cc, and the API's 5-recipient ceiling applies. Every recipient appears in the log on their own row.
-* **HTML and plain text.** A readable plain-text version is generated for HTML-only emails, as SendFleet recommends.
+* **To, Cc and Bcc.** Each email goes out as one message with its To, Cc and Bcc recipients, and every recipient appears in the log on their own row. The per-message limits of each sending mode are handled for you (see the FAQ).
+* **HTML and plain text.** A readable plain-text version is generated for HTML-only emails.
 * **Attachments.** Checked against SendFleet's limits (20 files, 25 MB each, 37 MB in total, no executables). A file that would be refused is left out and noted in the log, rather than failing the whole email.
-* **Retries done right.** Rate limits (60 requests a minute per key), `502 queue_error` and other failures where SendFleet confirms nothing was sent are retried automatically from a queue. A timeout is never retried automatically, because the email may already have been accepted and a retry could deliver it twice.
-* **Circuit breakers.** A rejected key, a used-up plan or a suspended account stops further API calls straight away instead of hammering the API (and getting your server's IP blocked for repeated failed authentication).
-* **Email log.** Recipient, sender, subject, status, sending mode, SendFleet message ID and the plugin that sent it. Message bodies are never stored in the log. Entries are deleted after 30 days by default, and the log can be turned off.
-* **Delivery status and suppressions (Managed plans).** Point a SendFleet webhook at the plugin and delivered, bounced and complained statuses appear in the log. Hard bounces, spam complaints and suppressions are added to a local suppression list, so the site stops spending sends on addresses that will never accept mail.
+* **Retries that cannot double-send.** Rate limits and other failures where SendFleet confirms nothing was sent are retried automatically from a queue. A timeout is never retried automatically, because the email may already have been accepted.
+* **Circuit breakers.** A rejected key, a used-up plan or a suspended account stops further API calls at once, instead of retrying into the same refusal.
+* **An email log without bodies.** Recipient, sender, subject, status, sending mode, SendFleet message ID and the plugin that sent it. Message bodies are never stored in the log, and entries are deleted after 30 days by default.
+* **Delivery status and suppressions (Managed plans).** Point a SendFleet webhook at the plugin and delivered, bounced and complained statuses appear in the log. Hard bounces and spam complaints are added to a local suppression list, so the site stops spending sends on addresses that will never accept mail.
 * **Background sending (optional).** Queue emails and send them from WP-Cron so checkout and form pages respond faster.
 * **Fallback (optional).** If SendFleet cannot take an email, send it the default WordPress way instead.
-* **Free plan support.** The Free plan includes 50 emails a month. With a BYOC domain they go to anyone. With a Shared SES domain, the Free plan is a smoke test that only delivers to your own SendFleet account address. The plugin knows this and sends notifications addressed to you (contact forms, admin notices) while skipping everyone else, with a clear note in the log.
-* **Built for operations.** Site Health checks, a WP-CLI command (`wp sendfleet status|connect|test|queue|refresh|purge-log`), wp-config.php constants for every secret, encrypted key storage, multisite support, and personal data export and erasure.
+* **Built for operations.** Site Health checks, a WP-CLI command, wp-config.php constants for every secret, encrypted key storage, multisite support, and personal data export and erasure.
 
-= Plans =
+= Pricing =
 
-All prices are in USD, billed monthly. The plugin itself is free.
+The plugin is free. SendFleet plans are billed monthly, in USD:
 
-* **Free BYOC** – $0, 50 emails a month through your own Amazon SES. No card.
-* **BYOC** – $9 a month, up to 1,000,000 emails a month through your own Amazon SES. Your SES sending quota also applies. AWS bills you for SES separately.
-* **Managed Starter** – $5 a month, 5,000 emails through SendFleet's SES.
-* **Managed Growth** – $15 a month, 25,000 emails through SendFleet's SES.
-* **Managed Pro** – $59 a month, 100,000 emails through SendFleet's SES.
+* **Free** – 50 emails a month, no card. On a BYOC domain they go to anyone. On a Managed domain the Free plan is a smoke test that only delivers to your own SendFleet account address.
+* **Managed Starter** – $5 a month, 5,000 emails.
+* **Managed Growth** – $15 a month, 25,000 emails.
+* **Managed Pro** – $59 a month, 100,000 emails.
+* **BYOC** – $9 a month, up to 1,000,000 emails through your own Amazon SES, which Amazon bills separately.
 
-Current details are on the [SendFleet pricing page](https://sendfleet.net/pricing/).
+Full details are on the [SendFleet pricing page](https://sendfleet.net/pricing/).
 
 = Requirements =
 
-* A SendFleet account. [Create one for free](https://sendfleet.net/register) (50 emails a month, no card).
+* A SendFleet account. [Create one for free](https://sendfleet.net/register), no card needed.
 * A sending domain added and verified in the SendFleet dashboard (DNS records for ownership and DKIM).
 * An API key from SendFleet → API Keys.
-* For BYOC only: an AWS account with Amazon SES production access, and permission to create an IAM role.
 
 == External services ==
 
@@ -68,7 +65,7 @@ This plugin connects to the SendFleet API (`https://api.sendfleet.net`), operate
 * Every request carries your API key in the `X-API-Key` header and identifies the plugin, WordPress and PHP versions in the `User-Agent` header. No other site data is sent.
 * **Webhooks** are optional and inbound: if you configure one in the SendFleet dashboard, SendFleet sends delivery events to this site's REST endpoint (`/wp-json/sendfleet/v1/webhook`), which verifies an HMAC signature before accepting them.
 
-Depending on your SendFleet plan, mail is delivered through your own Amazon SES account (BYOC; SendFleet does not store recipients, subjects or bodies) or through SendFleet's managed Amazon SES infrastructure (Managed plans; SendFleet keeps an email log including content for 14 days).
+Depending on your SendFleet plan, mail is delivered through SendFleet's managed Amazon SES infrastructure (Managed plans; SendFleet keeps an email log including content for 14 days) or through your own Amazon SES account (BYOC; SendFleet does not store recipients, subjects or bodies).
 
 * SendFleet terms and conditions: https://sendfleet.net/terms-and-conditions/
 * SendFleet privacy policy: https://sendfleet.net/privacy-policy/
@@ -81,8 +78,6 @@ Depending on your SendFleet plan, mail is delivered through your own Amazon SES 
 4. In WordPress, open **SendFleet** in the admin menu, paste the key and press **Connect**.
 5. Send a test email from the same screen.
 
-For BYOC, connect your AWS account in the SendFleet dashboard first (**Settings → BYOC**): create the IAM role from the template shown there, then paste its Role ARN and choose your SES region. Nothing about AWS is configured in WordPress.
-
 To keep the key out of the database, add it to `wp-config.php` instead:
 
 `define( 'SENDFLEET_API_KEY', 'abcd1234.your-secret-part' );`
@@ -91,25 +86,9 @@ Other constants: `SENDFLEET_FROM_EMAIL`, `SENDFLEET_FROM_NAME`, `SENDFLEET_WEBHO
 
 == Frequently Asked Questions ==
 
-= Why are my WordPress emails not arriving, or going to spam? =
-
-By default WordPress sends mail with PHP `mail()` from your web server. That mail is usually unauthenticated, and many hosts block or throttle it. SendFleet sends through Amazon SES from a domain you have verified with DKIM, which is what receiving mail servers check. Publishing SPF and DMARC records for your domain helps as well.
-
-= What does BYOC mean, and what does SendFleet store? =
-
-BYOC means Bring Your Own Cloud: email is sent from your own Amazon SES account. For BYOC sends, SendFleet keeps no recipients, subjects or message bodies. Attachments are held only while the email is being delivered, then deleted. What SendFleet does keep is a monthly send counter (for your plan limit) and your BYOC settings: the IAM role ARN, region and ExternalId. Delivery, bounce and complaint events stay in your own AWS account.
-
 = Do I need an AWS account? =
 
-Only for BYOC. Managed plans send through SendFleet's own Amazon SES, so all you need is a domain you can add DNS records to.
-
-= How much does it cost? =
-
-The plugin is free. SendFleet's Free BYOC plan includes 50 emails a month. BYOC is $9 a month for up to 1,000,000 emails, and AWS bills you for SES at its own rates. Managed plans start at $5 a month for 5,000 emails. See the Plans section above.
-
-= Is SendFleet an alternative to Resend, Postmark or SendGrid? =
-
-Yes, for transactional email from WordPress. Like them, SendFleet is a transactional email API. The difference is BYOC: on a BYOC domain your email goes out through your own Amazon SES account, at AWS prices, and SendFleet keeps none of its content. If you would rather not use AWS, the Managed plans work like a conventional hosted email service.
+No. On a Managed plan SendFleet sends for you, and all you set up is a few DNS records for your domain. An AWS account is only needed if you choose BYOC, to send through your own Amazon SES.
 
 = Which plugins does it work with? =
 
@@ -117,7 +96,7 @@ Anything that sends email through `wp_mail()`, which is nearly everything: WordP
 
 = Do I need to deactivate my SMTP plugin? =
 
-Yes. Run one mailer at a time, so deactivate WP Mail SMTP, FluentSMTP, Post SMTP or any other mailer plugin before connecting SendFleet. If another plugin replaces `wp_mail()` entirely, SendFleet shows a warning, because email may then bypass it.
+Yes. Run one mailer at a time. If another plugin replaces `wp_mail()` entirely, SendFleet shows a warning, because email may then bypass it.
 
 = Which sender address is used? =
 
@@ -125,15 +104,15 @@ If the sender an email already has is on one of your verified SendFleet domains,
 
 = What is the Free plan "smoke test"? =
 
-On the Free plan, a Shared SES domain only delivers to your own SendFleet account address. It exists so you can try SendFleet before setting up Amazon SES. The plugin delivers emails addressed to you and skips other recipients (they are listed in the log as skipped). Add a BYOC domain (through your own Amazon SES) or choose a Managed plan to email anyone. Never mark a smoke-test email as spam: SendFleet suspends the account on the first complaint.
+On the Free plan, a Managed (Shared SES) domain only delivers to your own SendFleet account address. It exists so you can try SendFleet before choosing a plan. The plugin delivers emails addressed to you, such as contact form and admin notifications, and skips other recipients (they are listed in the log as skipped). Choose a Managed plan or add a BYOC domain to email anyone. Never mark a smoke-test email as spam: SendFleet suspends the account on the first complaint.
 
 = How are Cc and Bcc handled? =
 
-As in any email: one message, with the Cc addresses visible to everyone and the Bcc addresses visible to nobody. SendFleet accepts up to 50 recipients per message on a BYOC domain, so a longer list is split into several messages. On a Shared SES domain the limit is 5 recipients and the message is addressed to exactly one of them, with the rest as Cc. Each recipient counts as one send against your SendFleet allowance, and on the Free plan's Shared SES smoke test only your own address can receive, so Cc and Bcc recipients are skipped there.
+As in any email: one message, with the Cc addresses visible to everyone and the Bcc addresses visible to nobody. On a Managed domain a message can have up to 5 recipients and is addressed to exactly one of them, so the first address stays in To and the rest are sent as Cc. On a BYOC domain a message can have up to 50 recipients, and a longer list is split into several messages. Each recipient counts as one send against your SendFleet allowance. On the Free plan's smoke test only your own address can receive, so Cc and Bcc recipients are skipped there.
 
 = What happens when SendFleet is unreachable or rate-limits me? =
 
-Requests that SendFleet confirms were not sent are retried automatically: inline once, then from a queue run by WP-Cron with backoff. Rate-limited emails wait for the limit window to pass. If you turn on the fallback, an email SendFleet cannot take is sent the default WordPress way.
+Requests that SendFleet confirms were not sent are retried automatically: inline once, then from a queue run by WP-Cron with backoff. Rate-limited emails (the limit is 60 requests a minute per key) wait for the limit window to pass. If you turn on the fallback, an email SendFleet cannot take is sent the default WordPress way.
 
 = Does the plugin store my emails? =
 
