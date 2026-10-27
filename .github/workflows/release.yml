@@ -18,9 +18,9 @@ jobs:
   # The same checks ci.yml runs, so a tag never deploys code CI would reject.
   checks:
     name: Lint and end-to-end
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
@@ -35,9 +35,9 @@ jobs:
 
   release:
     needs: checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check the tag matches the plugin version
         run: |
