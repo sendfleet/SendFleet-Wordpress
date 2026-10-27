@@ -52,7 +52,7 @@ $sendfleet_mode_name = array(
 					<?php
 					printf(
 						/* translators: %s: sign-up URL. */
-						wp_kses_post( __( '<a href="%s" target="_blank" rel="noopener noreferrer">Create a free SendFleet account</a> — 50 emails a month, no card.', 'sendfleet' ) ),
+						wp_kses_post( __( '<a href="%s" target="_blank" rel="noopener noreferrer">Create a free SendFleet account</a> — 3,000 emails a month, no card.', 'sendfleet' ) ),
 						esc_url( 'https://sendfleet.net/register' )
 					);
 					?>
@@ -69,7 +69,7 @@ $sendfleet_mode_name = array(
 			</div>
 			<div class="sf-card">
 				<h3 class="sf-card__title"><?php esc_html_e( 'Free plan', 'sendfleet' ); ?></h3>
-				<p><?php esc_html_e( '50 emails a month. With a BYOC domain they go to anyone. With a Shared SES domain the Free plan is a smoke test that only reaches your own account address — enough for contact forms and admin notifications to yourself.', 'sendfleet' ); ?></p>
+				<p><?php esc_html_e( '3,000 emails a month. With a BYOC domain they go to anyone. With a Shared SES domain the Free plan is a smoke test that only reaches your own account address — enough for contact forms and admin notifications to yourself.', 'sendfleet' ); ?></p>
 			</div>
 			<div class="sf-card">
 				<h3 class="sf-card__title"><?php esc_html_e( 'Nothing else to configure', 'sendfleet' ); ?></h3>

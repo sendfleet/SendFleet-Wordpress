@@ -4,7 +4,7 @@ Tags: email, smtp, transactional email, wp mail, amazon ses
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,10 +147,16 @@ All of its settings, both database tables (log and suppression list) and its sch
 
 == Changelog ==
 
+= 1.0.1 =
+* The Free plan is 3,000 emails a month, and the BYOC plan now includes delivery tracking and webhooks; the plugin's screens say so.
+
 = 1.0.0 =
 * First release: routes wp_mail() through the SendFleet API (BYOC and Managed), automatic sender selection, Free plan smoke-test support, attachments, retries and queue, background sending, fallback, email log, webhooks with a local suppression list, Site Health, WP-CLI, multisite and privacy tools.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Updated plan details. No behaviour change.
 
 = 1.0.0 =
 First release.

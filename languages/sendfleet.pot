@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: SendFleet 1.0.0\n"
+"Project-Id-Version: SendFleet 1.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sendfleet/\n"
 "Last-Translator: SendFleet <support@sendfleet.net>\n"
 "Language-Team: SendFleet <support@sendfleet.net>\n"
@@ -1091,7 +1091,7 @@ msgstr ""
 #. translators: %s: sign-up URL.
 #: includes/views/overview.php:55
 #, php-format
-msgid "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Create a free SendFleet account</a> — 50 emails a month, no card."
+msgid "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Create a free SendFleet account</a> — 3,000 emails a month, no card."
 msgstr ""
 
 #: includes/views/overview.php:60
@@ -1115,7 +1115,7 @@ msgid "Free plan"
 msgstr ""
 
 #: includes/views/overview.php:72
-msgid "50 emails a month. With a BYOC domain they go to anyone. With a Shared SES domain the Free plan is a smoke test that only reaches your own account address — enough for contact forms and admin notifications to yourself."
+msgid "3,000 emails a month. With a BYOC domain they go to anyone. With a Shared SES domain the Free plan is a smoke test that only reaches your own account address — enough for contact forms and admin notifications to yourself."
 msgstr ""
 
 #: includes/views/overview.php:75
