@@ -21,7 +21,7 @@ This is the official WordPress plugin for [SendFleet](https://sendfleet.net/), a
 SendFleet has two sending modes. The plugin works the same way with both.
 
 * **Managed.** SendFleet handles everything. There is no AWS account to set up: verify your domain with a few DNS records and you are sending. Email logs, delivery webhooks and bounce and complaint handling are included. From $5 a month for 5,000 emails.
-* **BYOC (bring your own SES).** Email goes out through your own Amazon SES account, and SendFleet never stores your recipients, subjects or message bodies. Free for 50 emails a month, or $9 a month for up to 1,000,000. Amazon bills you for SES separately.
+* **BYOC (bring your own SES).** Email goes out through your own Amazon SES account. Connect it with one click; SendFleet sets up delivery tracking, bounce protection and production access in your account for you, and never stores message bodies. Free for 3,000 emails a month, or $5 a month with 20,000 included and $0.10 per 1,000 after that. Amazon bills you for SES separately.
 
 = What it does for you =
 
@@ -33,7 +33,7 @@ SendFleet has two sending modes. The plugin works the same way with both.
 * **Retries that cannot double-send.** Rate limits and other failures where SendFleet confirms nothing was sent are retried automatically from a queue. A timeout is never retried automatically, because the email may already have been accepted.
 * **Circuit breakers.** A rejected key, a used-up plan or a suspended account stops further API calls at once, instead of retrying into the same refusal.
 * **An email log without bodies.** Recipient, sender, subject, status, sending mode, SendFleet message ID and the plugin that sent it. Message bodies are never stored in the log, and entries are deleted after 30 days by default.
-* **Delivery status and suppressions (Managed plans).** Point a SendFleet webhook at the plugin and delivered, bounced and complained statuses appear in the log. Hard bounces and spam complaints are added to a local suppression list, so the site stops spending sends on addresses that will never accept mail.
+* **Delivery status and suppressions (paid plans).** Point a SendFleet webhook at the plugin and delivered, bounced and complained statuses appear in the log. Hard bounces and spam complaints are added to a local suppression list, so the site stops spending sends on addresses that will never accept mail.
 * **Background sending (optional).** Queue emails and send them from WP-Cron so checkout and form pages respond faster.
 * **Fallback (optional).** If SendFleet cannot take an email, send it the default WordPress way instead.
 * **Built for operations.** Site Health checks, a WP-CLI command, wp-config.php constants for every secret, encrypted key storage, multisite support, and personal data export and erasure.
@@ -42,11 +42,11 @@ SendFleet has two sending modes. The plugin works the same way with both.
 
 The plugin is free. SendFleet plans are billed monthly, in USD:
 
-* **Free** – 50 emails a month, no card. On a BYOC domain they go to anyone. On a Managed domain the Free plan is a smoke test that only delivers to your own SendFleet account address.
+* **Free** – 3,000 emails a month, no card. On a BYOC domain they go to anyone. On a Managed domain the Free plan is a smoke test that only delivers to your own SendFleet account address.
 * **Managed Starter** – $5 a month, 5,000 emails.
 * **Managed Growth** – $15 a month, 25,000 emails.
 * **Managed Pro** – $59 a month, 100,000 emails.
-* **BYOC** – $9 a month, up to 1,000,000 emails through your own Amazon SES, which Amazon bills separately.
+* **BYOC** – $5 a month with 20,000 emails included, then $0.10 per 1,000, up to 1,000,000 a month under a cap you set. Sent through your own Amazon SES, which Amazon bills separately. Includes delivery tracking and webhooks.
 
 Full details are on the [SendFleet pricing page](https://sendfleet.net/pricing/).
 
@@ -65,7 +65,7 @@ This plugin connects to the SendFleet API (`https://api.sendfleet.net`), operate
 * Every request carries your API key in the `X-API-Key` header and identifies the plugin, WordPress and PHP versions in the `User-Agent` header. No other site data is sent.
 * **Webhooks** are optional and inbound: if you configure one in the SendFleet dashboard, SendFleet sends delivery events to this site's REST endpoint (`/wp-json/sendfleet/v1/webhook`), which verifies an HMAC signature before accepting them.
 
-Depending on your SendFleet plan, mail is delivered through SendFleet's managed Amazon SES infrastructure (Managed plans; SendFleet keeps an email log including content for 14 days) or through your own Amazon SES account (BYOC; SendFleet does not store recipients, subjects or bodies).
+Depending on your SendFleet plan, mail is delivered through SendFleet's managed Amazon SES infrastructure (Managed plans; SendFleet keeps an email log including content for 14 days) or through your own Amazon SES account (BYOC; SendFleet never stores message bodies, and keeps recipients, subjects and delivery status for 14 days only if you turn on email logs).
 
 * SendFleet terms and conditions: https://sendfleet.net/terms-and-conditions/
 * SendFleet privacy policy: https://sendfleet.net/privacy-policy/
@@ -124,7 +124,7 @@ Encrypted in the options table (libsodium, with a key derived from your site's s
 
 = Can I see delivery, bounce and complaint status? =
 
-On Managed plans, yes. Copy the endpoint URL from SendFleet → Settings → Webhooks into the SendFleet dashboard, select the events you want, and paste the signing secret back into the plugin. BYOC sends are delivered by your own Amazon SES account, so their events stay in your AWS account.
+On the BYOC and Managed plans, yes. Copy the endpoint URL from SendFleet → Settings → Webhooks into the SendFleet dashboard, select the events you want, and paste the signing secret back into the plugin. On BYOC, turn on delivery tracking in the SendFleet dashboard (Dashboard → AWS) so your own Amazon SES account reports deliveries, bounces and complaints.
 
 = Does it support multisite? =
 
