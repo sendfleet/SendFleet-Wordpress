@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: SendFleet 1.0.1\n"
+"Project-Id-Version: SendFleet 1.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sendfleet/\n"
 "Last-Translator: SendFleet <support@sendfleet.net>\n"
 "Language-Team: SendFleet <support@sendfleet.net>\n"
@@ -1107,7 +1107,7 @@ msgid "Two modes, one plugin"
 msgstr ""
 
 #: includes/views/overview.php:68
-msgid "BYOC sends through your own AWS SES account — SendFleet never stores message bodies, and keeps recipients and subjects only if you turn on email logs. Managed plans send through SendFleet's SES with logs, webhooks and bounce handling."
+msgid "BYOC sends through your own AWS SES account — SendFleet never stores message bodies, and keeps recipients and subjects only while email logs are on (the default; you can turn them off). Managed plans send through SendFleet's SES with logs, webhooks and bounce handling."
 msgstr ""
 
 #: includes/views/overview.php:71

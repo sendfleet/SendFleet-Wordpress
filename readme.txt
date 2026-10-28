@@ -4,7 +4,7 @@ Tags: email, smtp, transactional email, wp mail, amazon ses
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,7 +65,7 @@ This plugin connects to the SendFleet API (`https://api.sendfleet.net`), operate
 * Every request carries your API key in the `X-API-Key` header and identifies the plugin, WordPress and PHP versions in the `User-Agent` header. No other site data is sent.
 * **Webhooks** are optional and inbound: if you configure one in the SendFleet dashboard, SendFleet sends delivery events to this site's REST endpoint (`/wp-json/sendfleet/v1/webhook`), which verifies an HMAC signature before accepting them.
 
-Depending on your SendFleet plan, mail is delivered through SendFleet's managed Amazon SES infrastructure (Managed plans; SendFleet keeps an email log including content for 14 days) or through your own Amazon SES account (BYOC; SendFleet never stores message bodies, and keeps recipients, subjects and delivery status for 14 days only if you turn on email logs).
+Depending on your SendFleet plan, mail is delivered through SendFleet's managed Amazon SES infrastructure (Managed plans; SendFleet keeps an email log including content for 14 days) or through your own Amazon SES account (BYOC; SendFleet never stores message bodies, and keeps recipients, subjects and delivery status for 14 days only while email logs are on, which they are by default and you can turn off).
 
 * SendFleet terms and conditions: https://sendfleet.net/terms-and-conditions/
 * SendFleet privacy policy: https://sendfleet.net/privacy-policy/
@@ -147,6 +147,10 @@ All of its settings, both database tables (log and suppression list) and its sch
 
 == Changelog ==
 
+= 1.0.2 =
+* Fix: the Free plan's limit is 3,000 emails a month. 1.0.1 still measured it against 50, so the overview and Site Health warned that the limit was reached when it was not.
+* Webhooks are described as available on every paid plan, BYOC included.
+
 = 1.0.1 =
 * The Free plan is 3,000 emails a month, and the BYOC plan now includes delivery tracking and webhooks; the plugin's screens say so.
 
@@ -154,6 +158,9 @@ All of its settings, both database tables (log and suppression list) and its sch
 * First release: routes wp_mail() through the SendFleet API (BYOC and Managed), automatic sender selection, Free plan smoke-test support, attachments, retries and queue, background sending, fallback, email log, webhooks with a local suppression list, Site Health, WP-CLI, multisite and privacy tools.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Fixes a false "monthly limit reached" warning on the Free plan.
 
 = 1.0.1 =
 Updated plan details. No behaviour change.
