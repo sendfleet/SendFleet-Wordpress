@@ -59,7 +59,11 @@ final class Status {
 
 		$quota = State::breaker( 'quota' );
 		if ( $quota ) {
-			$issues[] = self::issue( 'quota', 'error', __( 'The monthly SendFleet plan limit is used up, so email is not being sent. Upgrade the plan or wait for the reset on the 1st (UTC).', 'sendfleet' ) );
+			if ( 'byoc' === Account::plan() ) {
+				$issues[] = self::issue( 'quota', 'error', __( 'The monthly cap on your SendFleet BYOC plan is used up, so email is not being sent. Raise the cap in the SendFleet dashboard (Dashboard → AWS; above 1,000,000 a month, email support@sendfleet.net) or wait for the reset on the 1st (UTC).', 'sendfleet' ) );
+			} else {
+				$issues[] = self::issue( 'quota', 'error', __( 'The monthly SendFleet plan limit is used up, so email is not being sent. Upgrade the plan or wait for the reset on the 1st (UTC).', 'sendfleet' ) );
+			}
 		}
 
 		if ( State::breaker( 'network' ) ) {
@@ -79,7 +83,7 @@ final class Status {
 		}
 
 		if ( 'byoc' === Account::plan() && ! Account::byoc_configured() ) {
-			$issues[] = self::issue( 'byoc_role', 'error', __( 'Your plan sends through your own AWS SES, but the BYOC IAM role is not validated yet. Finish the BYOC setup in the SendFleet dashboard (Settings → BYOC).', 'sendfleet' ) );
+			$issues[] = self::issue( 'byoc_role', 'error', __( 'Your plan sends through your own AWS SES, but your AWS account is not connected to SendFleet. Connect it, or reconnect it, in the SendFleet dashboard (Dashboard → AWS).', 'sendfleet' ) );
 		}
 
 		$routes = Account::usable_domains();

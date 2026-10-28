@@ -21,7 +21,7 @@ This is the official WordPress plugin for [SendFleet](https://sendfleet.net/), a
 SendFleet has two sending modes. The plugin works the same way with both.
 
 * **Managed.** SendFleet handles everything. There is no AWS account to set up: verify your domain with a few DNS records and you are sending. Email logs, delivery webhooks and bounce and complaint handling are included. From $5 a month for 5,000 emails.
-* **BYOC (bring your own SES).** Email goes out through your own Amazon SES account. Connect it with one click; SendFleet sets up delivery tracking, bounce protection and production access in your account for you, and never stores message bodies. Free for 3,000 emails a month, or $5 a month with 20,000 included and $0.10 per 1,000 after that. Amazon bills you for SES separately.
+* **BYOC (bring your own SES).** Email goes out through your own Amazon SES account. Connect it with one click; SendFleet sets up delivery tracking, bounce protection and production access in your account for you, and never stores message bodies. Free for 3,000 emails a month, or $5 a month with 20,000 emails and 20,000 logged emails included and $0.10 per 1,000 of each after that. Amazon bills you for SES separately.
 
 = What it does for you =
 
@@ -46,7 +46,7 @@ The plugin is free. SendFleet plans are billed monthly, in USD:
 * **Managed Starter** – $5 a month, 5,000 emails.
 * **Managed Growth** – $15 a month, 25,000 emails.
 * **Managed Pro** – $59 a month, 100,000 emails.
-* **BYOC** – $5 a month with 20,000 emails included, then $0.10 per 1,000, up to 1,000,000 a month under a cap you set. Sent through your own Amazon SES, which Amazon bills separately. Includes delivery tracking and webhooks.
+* **BYOC** – $5 a month with 20,000 emails and 20,000 logged emails included, then $0.10 per 1,000 emails sent and $0.10 per 1,000 emails logged, up to 1,000,000 a month under a cap you set. Sent through your own Amazon SES, which Amazon bills separately. Includes delivery tracking, email logs and webhooks.
 
 Full details are on the [SendFleet pricing page](https://sendfleet.net/pricing/).
 
@@ -124,7 +124,7 @@ Encrypted in the options table (libsodium, with a key derived from your site's s
 
 = Can I see delivery, bounce and complaint status? =
 
-On the BYOC and Managed plans, yes. Copy the endpoint URL from SendFleet → Settings → Webhooks into the SendFleet dashboard, select the events you want, and paste the signing secret back into the plugin. On BYOC, turn on delivery tracking in the SendFleet dashboard (Dashboard → AWS) so your own Amazon SES account reports deliveries, bounces and complaints.
+On the BYOC and Managed plans, yes. Copy the endpoint URL from SendFleet → Settings → Webhooks into the SendFleet dashboard, select the events you want, and paste the signing secret back into the plugin. On BYOC, the events come from your own Amazon SES account through the delivery tracking SendFleet sets up in it, which is on by default (Dashboard → AWS): bounces and complaints are always reported, deliveries if you choose to track them.
 
 = Does it support multisite? =
 

@@ -614,7 +614,7 @@ msgid "This site sends email (for example account, order and form notifications)
 msgstr ""
 
 #: includes/class-privacy.php:176
-msgid "Depending on the SendFleet plan the site uses, messages are sent either through the site owner's own Amazon SES account, in which case SendFleet does not store recipients, subjects or bodies, or through SendFleet's managed infrastructure, in which case SendFleet keeps an email log including message content for 14 days."
+msgid "Depending on the SendFleet plan the site uses, messages are sent either through the site owner's own Amazon SES account, in which case SendFleet never stores message bodies and keeps recipients, subjects and delivery status for 14 days only while the site owner has SendFleet's email logs turned on, or through SendFleet's managed infrastructure, in which case SendFleet keeps an email log including message content for 14 days."
 msgstr ""
 
 #: includes/class-privacy.php:177
@@ -773,71 +773,75 @@ msgstr ""
 msgid "Sending is paused or suspended on the SendFleet account."
 msgstr ""
 
-#: includes/class-status.php:62
+#: includes/class-status.php:63
+msgid "The monthly cap on your SendFleet BYOC plan is used up, so email is not being sent. Raise the cap in the SendFleet dashboard (Dashboard → AWS; above 1,000,000 a month, email support@sendfleet.net) or wait for the reset on the 1st (UTC)."
+msgstr ""
+
+#: includes/class-status.php:65
 msgid "The monthly SendFleet plan limit is used up, so email is not being sent. Upgrade the plan or wait for the reset on the 1st (UTC)."
 msgstr ""
 
-#: includes/class-status.php:66
+#: includes/class-status.php:70
 msgid "The SendFleet API did not respond to a recent request. New emails are queued and sent automatically once it answers again."
 msgstr ""
 
 #. translators: %s: error detail.
-#: includes/class-status.php:72
+#: includes/class-status.php:76
 #, php-format
 msgid "Could not read the SendFleet account details: %s"
 msgstr ""
 
-#: includes/class-status.php:78
+#: includes/class-status.php:82
 msgid "The SendFleet account email address is not verified. SendFleet blocks sending until you click the verification link it emailed you."
 msgstr ""
 
-#: includes/class-status.php:82
-msgid "Your plan sends through your own AWS SES, but the BYOC IAM role is not validated yet. Finish the BYOC setup in the SendFleet dashboard (Settings → BYOC)."
-msgstr ""
-
-#: includes/class-status.php:89
-msgid "Your Managed plan sends through SendFleet's SES, but your verified domains are BYOC domains. A domain's sending mode is permanent: add a Shared SES domain in the SendFleet dashboard."
-msgstr ""
-
-#: includes/class-status.php:91
-msgid "Your BYOC plan sends through your own AWS SES, but your verified domains are Shared SES domains. Add a BYOC domain in the SendFleet dashboard."
+#: includes/class-status.php:86
+msgid "Your plan sends through your own AWS SES, but your AWS account is not connected to SendFleet. Connect it, or reconnect it, in the SendFleet dashboard (Dashboard → AWS)."
 msgstr ""
 
 #: includes/class-status.php:93
+msgid "Your Managed plan sends through SendFleet's SES, but your verified domains are BYOC domains. A domain's sending mode is permanent: add a Shared SES domain in the SendFleet dashboard."
+msgstr ""
+
+#: includes/class-status.php:95
+msgid "Your BYOC plan sends through your own AWS SES, but your verified domains are Shared SES domains. Add a BYOC domain in the SendFleet dashboard."
+msgstr ""
+
+#: includes/class-status.php:97
 msgid "There is no verified sending domain on your SendFleet account yet. Add a domain in the SendFleet dashboard (Domains), publish the DNS records and verify them."
 msgstr ""
 
 #. translators: 1: configured sender, 2: sender used instead.
-#: includes/class-status.php:101
+#: includes/class-status.php:105
 #, php-format
 msgid "The default sender %1$s is not on a verified sending domain of your SendFleet account, so %2$s is used instead. Choose an address on one of your verified domains."
 msgstr ""
 
 #. translators: %s: SendFleet account email.
-#: includes/class-status.php:106
+#: includes/class-status.php:110
 #, php-format
 msgid "Free plan smoke-test mode: your only domain is a Shared SES domain, so SendFleet delivers only to your own account address (%s). That covers notifications to yourself, such as contact forms. To email anyone else, add a BYOC domain (free) or choose a Managed plan; other recipients are skipped until then."
 msgstr ""
 
 #. translators: 1: sends used, 2: plan limit.
-#: includes/class-status.php:116
+#: includes/class-status.php:120
 #, php-format
 msgid "You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC). For a higher limit, email support@sendfleet.net with your monthly volume."
 msgstr ""
 
 #. translators: 1: sends used, 2: plan limit.
-#: includes/class-status.php:119
+#: includes/class-status.php:123
 #, php-format
 msgid "You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC) unless you upgrade."
 msgstr ""
 
 #. translators: 1: sends used, 2: plan limit.
-#: includes/class-status.php:123
+#: includes/class-status.php:127
 #, php-format
 msgid "You have used %1$s of %2$s emails this month."
 msgstr ""
 
-#: includes/class-status.php:129
+#: includes/class-status.php:133
 msgid "Queued emails have been waiting for more than 15 minutes. WP-Cron does not seem to run on this site; make sure it is not disabled without a system cron job calling wp-cron.php."
 msgstr ""
 

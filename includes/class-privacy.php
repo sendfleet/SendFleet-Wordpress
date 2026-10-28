@@ -173,7 +173,7 @@ final class Privacy {
 		}
 
 		$content = '<p>' . __( 'This site sends email (for example account, order and form notifications) through SendFleet, a transactional email service. To deliver a message, the recipient address, sender, subject, message content and any attachments are transmitted to SendFleet (api.sendfleet.net).', 'sendfleet' ) . '</p>'
-			. '<p>' . __( 'Depending on the SendFleet plan the site uses, messages are sent either through the site owner\'s own Amazon SES account, in which case SendFleet does not store recipients, subjects or bodies, or through SendFleet\'s managed infrastructure, in which case SendFleet keeps an email log including message content for 14 days.', 'sendfleet' ) . '</p>'
+			. '<p>' . __( 'Depending on the SendFleet plan the site uses, messages are sent either through the site owner\'s own Amazon SES account, in which case SendFleet never stores message bodies and keeps recipients, subjects and delivery status for 14 days only while the site owner has SendFleet\'s email logs turned on, or through SendFleet\'s managed infrastructure, in which case SendFleet keeps an email log including message content for 14 days.', 'sendfleet' ) . '</p>'
 			. '<p>' . __( 'This site keeps its own log of sent email (recipient, sender, subject and delivery status, but not the message content) for a limited period.', 'sendfleet' ) . '</p>'
 			/* translators: %s: URL of the SendFleet privacy policy. */
 			. '<p>' . sprintf( __( 'SendFleet privacy policy: %s', 'sendfleet' ), '<a href="https://sendfleet.net/privacy-policy/">https://sendfleet.net/privacy-policy/</a>' ) . '</p>';
