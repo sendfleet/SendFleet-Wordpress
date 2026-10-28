@@ -1107,7 +1107,7 @@ msgid "Two modes, one plugin"
 msgstr ""
 
 #: includes/views/overview.php:68
-msgid "BYOC sends through your own AWS SES account — SendFleet never stores recipients, subjects or bodies. Managed plans send through SendFleet's SES with logs, webhooks and bounce handling."
+msgid "BYOC sends through your own AWS SES account — SendFleet never stores message bodies, and keeps recipients and subjects only if you turn on email logs. Managed plans send through SendFleet's SES with logs, webhooks and bounce handling."
 msgstr ""
 
 #: includes/views/overview.php:71
@@ -1424,7 +1424,7 @@ msgid "Do not send to addresses that hard-bounced, complained or were suppressed
 msgstr ""
 
 #: includes/views/settings.php:158
-msgid "Filled automatically by webhooks (Managed plans) and by hand under Email Log → Suppressions. Saves sends from your allowance and protects your sender reputation."
+msgid "Filled automatically by webhooks (paid plans) and by hand under Email Log → Suppressions. Saves sends from your allowance and protects your sender reputation."
 msgstr ""
 
 #: includes/views/settings.php:165
@@ -1432,11 +1432,11 @@ msgid "Webhooks"
 msgstr ""
 
 #: includes/views/settings.php:165
-msgid "Managed plans"
+msgid "Paid plans"
 msgstr ""
 
 #: includes/views/settings.php:166
-msgid "Optional. Lets SendFleet report delivered, bounced and complained emails back to this log, and keeps the suppression list current. BYOC sends and Free plan smoke tests do not fire webhooks."
+msgid "Optional. Lets SendFleet report delivered, bounced and complained emails back to this log, and keeps the suppression list current. On the BYOC plan they come from your own SES events while delivery tracking is on (the default, under Dashboard → AWS in SendFleet). The Free plan, including its smoke tests, does not fire webhooks."
 msgstr ""
 
 #: includes/views/settings.php:168

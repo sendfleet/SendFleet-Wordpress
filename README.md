@@ -161,7 +161,8 @@ Log in at http://localhost:8088/wp-admin (admin / admin). Test keys accepted by 
 | `byoc0001` | Free plan with a BYOC domain (`byoc.example.com`) and a Shared smoke domain |
 | `paid0001` | BYOC plan |
 | `mngd0001` | Managed Growth (`mail.example.com`), webhooks |
-| `quota001` | Free plan, quota used up |
+| `quota001` | Free plan, 3,000 quota used up |
+| `near0001` | Free plan, 2,950 of 3,000 used (`near.example.com`) |
 | `bqta0001` | BYOC plan, 1,000,000 quota used up |
 | `unvr0001` | Account email not verified |
 | `susp0001` | Sending suspended |

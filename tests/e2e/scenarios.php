@@ -168,8 +168,8 @@ $b = sf_requests()[0]['body'];
 sf_check( 'several to addresses go as one request, one in To', 1 === count( sf_requests() ) && 'one@gmail.com' === $b['to'], wp_json_encode( $b['to'] ) );
 sf_check( 'the rest of the To list is sent as Cc', array( 'two@gmail.com', 'three@gmail.com' ) === $b['cc'] && ! isset( $b['bcc'] ), wp_json_encode( $b['cc'] ) );
 
-// More than 50 recipients: split into messages of at most 50. On the paid BYOC
-// plan, because every recipient counts against the free plan's 50.
+// More than 50 recipients: split into messages of at most 50, the API's
+// per-message ceiling on a BYOC domain.
 sf_use_key( 'paid0001' );
 $many = array();
 for ( $i = 0; $i < 53; $i++ ) {
@@ -203,14 +203,15 @@ sf_check( 'and keeps splitting without asking again', 2 === count( sf_requests()
 State::clear_breaker( 'single_recipient' );
 wp_remote_post( SF_MOCK . '/__multi', array( 'body' => '1' ) );
 
-// A send larger than what is left of the free plan is refused whole.
-sf_use_key( 'byoc0001' );
+// A send larger than what is left of the free plan is refused whole. The
+// near0001 account has used 2,950 of its 3,000, so 50 are left.
+sf_use_key( 'near0001' );
 $many = array();
 for ( $i = 0; $i < 51; $i++ ) {
 	$many[] = "free{$i}@gmail.com";
 }
 $ok   = wp_mail( 'freelead@gmail.com', 'Too many for free', 'Body', array( 'Bcc: ' . implode( ', ', array_slice( $many, 0, 49 ) ) ) );
-sf_check( 'exactly 50 recipients fit the free plan', true === $ok && 1 === count( sf_requests() ) );
+sf_check( 'exactly the 50 sends left fit the free plan', true === $ok && 1 === count( sf_requests() ) );
 $ok   = wp_mail( 'freelead@gmail.com', 'Over', 'Body', array( 'Cc: over@gmail.com' ) );
 sf_check( 'none fit once it is used up', false === $ok );
 sf_use_key( 'byoc0001' );
@@ -441,6 +442,7 @@ delete_option( 'sf_e2e_smtp' );
 
 echo "\n== Circuit breakers ==\n";
 sf_use_key( 'quota001' );
+sf_check( 'the free plan is capped at 3,000', 3000 === Account::limit(), wp_json_encode( Account::limit() ) );
 $ok = wp_mail( 'x@gmail.com', 'Q1', 'Body' );
 $ok2 = wp_mail( 'y@gmail.com', 'Q2', 'Body' );
 $rows = sf_rows();

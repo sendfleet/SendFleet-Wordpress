@@ -38,13 +38,14 @@ const ACCOUNTS = {
 	[pad('byoc0001.')]: { name: 'Free BYOC', email: 'owner@byoc.example.com', is_verified: true, plan: 'starter', byoc_configured: true, byoc: ['byoc.example.com'], shared: ['smoke.example.com'] },
 	[pad('paid0001.')]: { name: 'Paid BYOC', email: 'owner@paid.example.com', is_verified: true, plan: 'byoc', byoc_configured: true, byoc: ['paid.example.com'], shared: [] },
 	[pad('mngd0001.')]: { name: 'Managed', email: 'owner@mail.example.com', is_verified: true, plan: 'growth', byoc_configured: false, byoc: [], shared: ['mail.example.com'] },
-	[pad('quota001.')]: { name: 'Quota', email: 'owner@quota.example.com', is_verified: true, plan: 'starter', byoc_configured: true, byoc: ['quota.example.com'], shared: [], preset_usage: 50 },
+	[pad('quota001.')]: { name: 'Quota', email: 'owner@quota.example.com', is_verified: true, plan: 'starter', byoc_configured: true, byoc: ['quota.example.com'], shared: [], preset_usage: 3000 },
+	[pad('near0001.')]: { name: 'Free BYOC Nearly Used', email: 'owner@near.example.com', is_verified: true, plan: 'starter', byoc_configured: true, byoc: ['near.example.com'], shared: [], preset_usage: 2950 },
 	[pad('bqta0001.')]: { name: 'Paid BYOC Quota', email: 'owner@bqta.example.com', is_verified: true, plan: 'byoc', byoc_configured: true, byoc: ['bqta.example.com'], shared: [], preset_usage: 1000000 },
 	[pad('unvr0001.')]: { name: 'Unverified', email: 'owner@unverified.example.com', is_verified: false, plan: 'growth', byoc_configured: false, byoc: [], shared: ['unverified.example.com'] },
 	[pad('susp0001.')]: { name: 'Suspended', email: 'owner@susp.example.com', is_verified: true, plan: 'growth', byoc_configured: false, byoc: [], shared: ['susp.example.com'], suspended: true },
 };
 
-const LIMITS = { starter: 50, byoc: 1000000, managed_starter: 5000, growth: 25000, pro: 100000 };
+const LIMITS = { starter: 3000, byoc: 1000000, managed_starter: 5000, growth: 25000, pro: 100000 };
 const MANAGED = new Set(['managed_starter', 'growth', 'pro']);
 const BLOCKED = new Set('exe bat cmd com msi vbs vbe js jse wsf wsh ps1 ps2 psc1 psc2 reg scr dll hta inf jar lnk pif url ade adp app bas chm cpl crt hlp mde msc msp mst pcd prg scf shs sys vxd wsc xnk'.split(' '));
 const ALLOWED = new Set(['application/pdf', 'text/plain', 'text/csv', 'text/html', 'image/png', 'image/jpeg', 'image/gif', 'application/zip', 'application/json', 'application/xml', 'text/calendar', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']);

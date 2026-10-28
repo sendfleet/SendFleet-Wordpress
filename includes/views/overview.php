@@ -65,7 +65,7 @@ $sendfleet_mode_name = array(
 		<div class="sf-grid sf-grid--3">
 			<div class="sf-card">
 				<h3 class="sf-card__title"><?php esc_html_e( 'Two modes, one plugin', 'sendfleet' ); ?></h3>
-				<p><?php esc_html_e( 'BYOC sends through your own AWS SES account — SendFleet never stores recipients, subjects or bodies. Managed plans send through SendFleet\'s SES with logs, webhooks and bounce handling.', 'sendfleet' ); ?></p>
+				<p><?php esc_html_e( 'BYOC sends through your own AWS SES account — SendFleet never stores message bodies, and keeps recipients and subjects only if you turn on email logs. Managed plans send through SendFleet\'s SES with logs, webhooks and bounce handling.', 'sendfleet' ); ?></p>
 			</div>
 			<div class="sf-card">
 				<h3 class="sf-card__title"><?php esc_html_e( 'Free plan', 'sendfleet' ); ?></h3>

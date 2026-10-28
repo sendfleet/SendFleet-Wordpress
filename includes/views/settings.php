@@ -155,16 +155,16 @@ $sendfleet_has_secret   = '' !== Settings::webhook_secret();
 					<th scope="row"><?php esc_html_e( 'Suppression list', 'sendfleet' ); ?></th>
 					<td>
 						<label><input type="checkbox" name="suppression_enabled" value="1" <?php checked( $sendfleet_settings['suppression_enabled'] ); ?> /> <?php esc_html_e( 'Do not send to addresses that hard-bounced, complained or were suppressed', 'sendfleet' ); ?></label>
-						<p class="description"><?php esc_html_e( 'Filled automatically by webhooks (Managed plans) and by hand under Email Log → Suppressions. Saves sends from your allowance and protects your sender reputation.', 'sendfleet' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Filled automatically by webhooks (paid plans) and by hand under Email Log → Suppressions. Saves sends from your allowance and protects your sender reputation.', 'sendfleet' ); ?></p>
 					</td>
 				</tr>
 			</table>
 		</section>
 
 		<section class="sf-card" id="webhooks">
-			<h2 class="sf-card__title"><?php esc_html_e( 'Webhooks', 'sendfleet' ); ?> <span class="sf-badge sf-badge--neutral"><?php esc_html_e( 'Managed plans', 'sendfleet' ); ?></span></h2>
-			<p class="sf-help"><?php esc_html_e( 'Optional. Lets SendFleet report delivered, bounced and complained emails back to this log, and keeps the suppression list current. BYOC sends and Free plan smoke tests do not fire webhooks.', 'sendfleet' ); ?></p>
-			<?php if ( Account::is_known() && ! Account::is_managed() ) : ?>
+			<h2 class="sf-card__title"><?php esc_html_e( 'Webhooks', 'sendfleet' ); ?> <span class="sf-badge sf-badge--neutral"><?php esc_html_e( 'Paid plans', 'sendfleet' ); ?></span></h2>
+			<p class="sf-help"><?php esc_html_e( 'Optional. Lets SendFleet report delivered, bounced and complained emails back to this log, and keeps the suppression list current. On the BYOC plan they come from your own SES events while delivery tracking is on (the default, under Dashboard → AWS in SendFleet). The Free plan, including its smoke tests, does not fire webhooks.', 'sendfleet' ); ?></p>
+			<?php if ( Account::is_known() && Account::is_free() ) : ?>
 				<div class="sf-callout sf-callout--info"><p><?php esc_html_e( 'Your current plan does not deliver webhooks. You can leave this empty.', 'sendfleet' ); ?></p></div>
 			<?php endif; ?>
 			<table class="form-table" role="presentation">

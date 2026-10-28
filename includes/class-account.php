@@ -46,7 +46,7 @@ final class Account {
 		return array(
 			'starter'         => array(
 				'label'   => __( 'Free BYOC', 'sendfleet' ),
-				'limit'   => 50,
+				'limit'   => 3000,
 				'managed' => false,
 			),
 			'byoc'            => array(

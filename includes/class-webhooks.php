@@ -10,7 +10,7 @@ namespace SendFleet;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Receives SendFleet delivery events (Managed plans) at
+ * Receives SendFleet delivery events (paid plans) at
  * POST /wp-json/sendfleet/v1/webhook.
  *
  * Every request must carry `X-SendFleet-Signature: sha256=<hex>`, an

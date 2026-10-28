@@ -27,7 +27,7 @@ final class Log {
 	const STATUS_SKIPPED  = 'skipped';
 	const STATUS_FALLBACK = 'fallback';
 
-	// Delivery states reported by webhooks (Managed plans).
+	// Delivery states reported by webhooks (paid plans).
 	const STATUS_SENT        = 'sent';
 	const STATUS_DELIVERED   = 'delivered';
 	const STATUS_DELAYED     = 'delayed';
