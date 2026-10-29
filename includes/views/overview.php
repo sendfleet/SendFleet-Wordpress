@@ -17,12 +17,15 @@ $sendfleet_has_key   = '' !== Settings::api_key();
 $sendfleet_known     = Account::is_known();
 $sendfleet_routes    = Account::usable_domains();
 $sendfleet_user      = wp_get_current_user();
-$sendfleet_test_to   = Account::is_smoke_only() ? Account::email() : ( $sendfleet_user && $sendfleet_user->user_email ? $sendfleet_user->user_email : get_option( 'admin_email' ) );
 $sendfleet_mode_name = array(
 	Account::ROUTE_BYOC   => __( 'BYOC — your AWS SES', 'sendfleet' ),
 	Account::ROUTE_SHARED => __( 'Shared SES', 'sendfleet' ),
 	Account::ROUTE_SMOKE  => __( 'Smoke test — your address only', 'sendfleet' ),
 );
+
+// The SendFleet account's own address first: it is verified, every plan may
+// send to it, and it is the inbox the account holder is watching.
+$sendfleet_test_to = '' !== Account::email() ? Account::email() : ( $sendfleet_user && $sendfleet_user->user_email ? $sendfleet_user->user_email : get_option( 'admin_email' ) );
 ?>
 <div class="wrap sf-wrap">
 	<?php Admin::header( Admin::SLUG ); ?>
@@ -219,6 +222,8 @@ $sendfleet_mode_name = array(
 					<?php endif; ?>
 					<?php if ( Account::is_smoke_only() ) : ?>
 						<p class="sf-help"><?php esc_html_e( 'Smoke-test mode delivers only to your SendFleet account address.', 'sendfleet' ); ?></p>
+					<?php elseif ( '' !== Account::email() ) : ?>
+						<p class="sf-help"><?php esc_html_e( 'Prefilled with your SendFleet account address. Change it to test another inbox.', 'sendfleet' ); ?></p>
 					<?php endif; ?>
 					<div><button type="submit" class="button button-primary sf-button"<?php disabled( ! Settings::is_enabled() ); ?>><?php esc_html_e( 'Send test email', 'sendfleet' ); ?></button></div>
 				</form>
