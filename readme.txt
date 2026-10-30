@@ -8,7 +8,7 @@ Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Send every WordPress email through SendFleet. Paste one API key: no SMTP settings, no AWS account. Free to try, plans from $5 a month.
+Send every WordPress email through SendFleet. One API key, no SMTP settings. Your own Amazon SES free for 3,000 emails a month, or ours from $5.
 
 == Description ==
 
@@ -20,8 +20,8 @@ This is the official WordPress plugin for [SendFleet](https://sendfleet.net/), a
 
 SendFleet has two sending modes. The plugin works the same way with both.
 
-* **Managed.** SendFleet handles everything. There is no AWS account to set up: verify your domain with a few DNS records and you are sending. Email logs, delivery webhooks and bounce and complaint handling are included. From $5 a month for 5,000 emails.
-* **BYOC (bring your own SES).** Email goes out through your own Amazon SES account. Connect it with one click; SendFleet sets up delivery tracking, bounce protection and production access in your account for you, and never stores message bodies. Free for 3,000 emails a month, or $5 a month with 20,000 emails and 20,000 logged emails included and $0.10 per 1,000 of each after that. Amazon bills you for SES separately.
+* **BYOC (bring your own SES), recommended.** Email goes out through your own Amazon SES account, so the sender reputation is yours alone. Connect it with one click; SendFleet sets up delivery tracking, bounce protection and production access in your account for you, and never stores message bodies. Free for 3,000 emails a month, or $5 a month with 20,000 emails and 20,000 logged emails included and $0.10 per 1,000 of each after that. Amazon bills you for SES separately.
+* **Managed.** The quick way to start if your site is not on AWS yet. Verify your domain with a few DNS records and you are sending through SendFleet's own Amazon SES. Email logs, delivery webhooks and bounce and complaint handling are included. Every Managed account shares one sender reputation, so the rules are strict, and we recommend moving to BYOC for production mail when you are ready. From $5 a month for 5,000 emails.
 
 = What it does for you =
 
@@ -43,10 +43,10 @@ SendFleet has two sending modes. The plugin works the same way with both.
 The plugin is free. SendFleet plans are billed monthly, in USD:
 
 * **Free** – 3,000 emails a month, no card. On a BYOC domain they go to anyone. On a Managed domain the Free plan is a smoke test that only delivers to your own SendFleet account address.
+* **BYOC** – $5 a month with 20,000 emails and 20,000 logged emails included, then $0.10 per 1,000 emails sent and $0.10 per 1,000 emails logged, up to 1,000,000 a month under a cap you set. Sent through your own Amazon SES, which Amazon bills separately. Includes delivery tracking, email logs and webhooks.
 * **Managed Starter** – $5 a month, 5,000 emails.
 * **Managed Growth** – $15 a month, 25,000 emails.
 * **Managed Pro** – $59 a month, 100,000 emails.
-* **BYOC** – $5 a month with 20,000 emails and 20,000 logged emails included, then $0.10 per 1,000 emails sent and $0.10 per 1,000 emails logged, up to 1,000,000 a month under a cap you set. Sent through your own Amazon SES, which Amazon bills separately. Includes delivery tracking, email logs and webhooks.
 
 Full details are on the [SendFleet pricing page](https://sendfleet.net/pricing/).
 
@@ -65,7 +65,7 @@ This plugin connects to the SendFleet API (`https://api.sendfleet.net`), operate
 * Every request carries your API key in the `X-API-Key` header and identifies the plugin, WordPress and PHP versions in the `User-Agent` header. No other site data is sent.
 * **Webhooks** are optional and inbound: if you configure one in the SendFleet dashboard, SendFleet sends delivery events to this site's REST endpoint (`/wp-json/sendfleet/v1/webhook`), which verifies an HMAC signature before accepting them.
 
-Depending on your SendFleet plan, mail is delivered through SendFleet's managed Amazon SES infrastructure (Managed plans; SendFleet keeps an email log including content for 14 days) or through your own Amazon SES account (BYOC; SendFleet never stores message bodies, and keeps recipients, subjects and delivery status for 14 days only while email logs are on, which they are by default and you can turn off).
+Depending on your SendFleet plan, mail is delivered through your own Amazon SES account (BYOC; SendFleet never stores message bodies, and keeps recipients, subjects and delivery status for 14 days only while email logs are on, which they are by default and you can turn off) or through SendFleet's managed Amazon SES infrastructure (Managed plans; SendFleet keeps an email log including content for 14 days).
 
 * SendFleet terms and conditions: https://sendfleet.net/terms-and-conditions/
 * SendFleet privacy policy: https://sendfleet.net/privacy-policy/
@@ -88,7 +88,7 @@ Other constants: `SENDFLEET_FROM_EMAIL`, `SENDFLEET_FROM_NAME`, `SENDFLEET_WEBHO
 
 = Do I need an AWS account? =
 
-No. On a Managed plan SendFleet sends for you, and all you set up is a few DNS records for your domain. An AWS account is only needed if you choose BYOC, to send through your own Amazon SES.
+Not to get started. On a Managed plan SendFleet sends for you, and all you set up is a few DNS records for your domain. For production mail we recommend BYOC, which sends through your own Amazon SES; a brand-new AWS account is fine, because SendFleet can request SES production access for it.
 
 = Which plugins does it work with? =
 
@@ -104,7 +104,7 @@ If the sender an email already has is on one of your verified SendFleet domains,
 
 = What is the Free plan "smoke test"? =
 
-On the Free plan, a Managed (Shared SES) domain only delivers to your own SendFleet account address. It exists so you can try SendFleet before choosing a plan. The plugin delivers emails addressed to you, such as contact form and admin notifications, and skips other recipients (they are listed in the log as skipped). Choose a Managed plan or add a BYOC domain to email anyone. Never mark a smoke-test email as spam: SendFleet suspends the account on the first complaint.
+On the Free plan, a Managed (Shared SES) domain only delivers to your own SendFleet account address. It exists so you can try SendFleet before choosing a plan. The plugin delivers emails addressed to you, such as contact form and admin notifications, and skips other recipients (they are listed in the log as skipped). Add a BYOC domain or choose a Managed plan to email anyone. Never mark a smoke-test email as spam: SendFleet suspends the account on the first complaint.
 
 = How are Cc and Bcc handled? =
 
