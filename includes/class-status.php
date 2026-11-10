@@ -115,7 +115,7 @@ final class Status {
 		if ( null !== $limit && ! $quota ) {
 			$used = Account::used();
 			if ( $used >= $limit ) {
-				if ( Account::is_paid_byoc() ) {
+				if ( 'scale' === Account::plan() ) {
 					/* translators: 1: sends used, 2: plan limit. */
 					$issues[] = self::issue( 'quota_reached', 'error', sprintf( __( 'You have used %1$s of %2$s emails this month. SendFleet refuses further sends until the 1st (UTC). For a higher limit, email support@sendfleet.net with your monthly volume.', 'sendfleet' ), number_format_i18n( $used ), number_format_i18n( $limit ) ) );
 				} else {

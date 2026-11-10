@@ -40,7 +40,7 @@ const ACCOUNTS = {
 	[pad('mngd0001.')]: { name: 'Managed', email: 'owner@mail.example.com', is_verified: true, plan: 'managed', byoc_configured: false, byoc: [], shared: ['mail.example.com'] },
 	[pad('quota001.')]: { name: 'Quota', email: 'owner@quota.example.com', is_verified: true, plan: 'starter', byoc_configured: true, byoc: ['quota.example.com'], shared: [], preset_usage: 3000 },
 	[pad('near0001.')]: { name: 'Free BYOC Nearly Used', email: 'owner@near.example.com', is_verified: true, plan: 'starter', byoc_configured: true, byoc: ['near.example.com'], shared: [], preset_usage: 2950 },
-	[pad('bqta0001.')]: { name: 'Paid BYOC Quota', email: 'owner@bqta.example.com', is_verified: true, plan: 'byoc', byoc_configured: true, byoc: ['bqta.example.com'], shared: [], preset_usage: 1000000 },
+	[pad('bqta0001.')]: { name: 'Paid BYOC Quota', email: 'owner@bqta.example.com', is_verified: true, plan: 'byoc', byoc_configured: true, byoc: ['bqta.example.com'], shared: [], preset_usage: 2000000 },
 	[pad('unvr0001.')]: { name: 'Unverified', email: 'owner@unverified.example.com', is_verified: false, plan: 'managed', byoc_configured: false, byoc: [], shared: ['unverified.example.com'] },
 	[pad('susp0001.')]: { name: 'Suspended', email: 'owner@susp.example.com', is_verified: true, plan: 'managed', byoc_configured: false, byoc: [], shared: ['susp.example.com'], suspended: true },
 };
