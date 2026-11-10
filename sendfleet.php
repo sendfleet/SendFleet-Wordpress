@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       SendFleet – Transactional Email API
+ * Plugin Name:       SendFleet – Email on Your Own Amazon SES
  * Plugin URI:        https://docs.sendfleet.net/
- * Description:       Sends every email WordPress sends through the SendFleet API, on SendFleet's managed SES or your own (BYOC). Paste an API key and wp_mail() is handled. No SMTP settings.
- * Version:           1.0.2
+ * Description:       Sends every email WordPress sends through the SendFleet API, on your own Amazon SES (BYOC) or SendFleet's managed SES. Paste an API key and wp_mail() is handled. No SMTP settings.
+ * Version:           1.1.0
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            SendFleet
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SENDFLEET_VERSION', '1.0.2' );
+define( 'SENDFLEET_VERSION', '1.1.0' );
 define( 'SENDFLEET_PLUGIN_FILE', __FILE__ );
 define( 'SENDFLEET_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SENDFLEET_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

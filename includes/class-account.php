@@ -44,29 +44,24 @@ final class Account {
 	 */
 	public static function plans() {
 		return array(
-			'starter'         => array(
-				'label'   => __( 'Free BYOC', 'sendfleet' ),
+			'starter' => array(
+				'label'   => __( 'Free', 'sendfleet' ),
 				'limit'   => 3000,
 				'managed' => false,
 			),
-			'byoc'            => array(
-				'label'   => __( 'BYOC', 'sendfleet' ),
-				'limit'   => 1000000,
+			'byoc'    => array(
+				'label'   => __( 'Pro', 'sendfleet' ),
+				'limit'   => 2000000,
 				'managed' => false,
 			),
-			'managed_starter' => array(
-				'label'   => __( 'Managed Starter', 'sendfleet' ),
-				'limit'   => 5000,
-				'managed' => true,
+			'scale'   => array(
+				'label'   => __( 'Scale', 'sendfleet' ),
+				'limit'   => 10000000,
+				'managed' => false,
 			),
-			'growth'          => array(
-				'label'   => __( 'Managed Growth', 'sendfleet' ),
+			'managed' => array(
+				'label'   => __( 'Managed', 'sendfleet' ),
 				'limit'   => 25000,
-				'managed' => true,
-			),
-			'pro'             => array(
-				'label'   => __( 'Managed Pro', 'sendfleet' ),
-				'limit'   => 100000,
 				'managed' => true,
 			),
 		);
@@ -326,12 +321,21 @@ final class Account {
 	}
 
 	/**
-	 * Whether the plan is the Free BYOC plan.
+	 * Whether the plan is the Free plan.
 	 *
 	 * @return bool
 	 */
 	public static function is_free() {
 		return 'starter' === self::plan();
+	}
+
+	/**
+	 * Whether the plan is a paid plan on the customer's own SES (Pro or Scale).
+	 *
+	 * @return bool
+	 */
+	public static function is_paid_byoc() {
+		return in_array( self::plan(), array( 'byoc', 'scale' ), true );
 	}
 
 	/**
@@ -454,7 +458,7 @@ final class Account {
 			return $routes;
 		}
 
-		if ( self::byoc_configured() || 'byoc' === $plan ) {
+		if ( self::byoc_configured() || self::is_paid_byoc() ) {
 			foreach ( self::byoc_domains() as $domain ) {
 				$routes[ $domain ] = self::ROUTE_BYOC;
 			}

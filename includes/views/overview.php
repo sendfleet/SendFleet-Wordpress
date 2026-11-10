@@ -68,11 +68,11 @@ $sendfleet_test_to = '' !== Account::email() ? Account::email() : ( $sendfleet_u
 		<div class="sf-grid sf-grid--3">
 			<div class="sf-card">
 				<h3 class="sf-card__title"><?php esc_html_e( 'Two modes, one plugin', 'sendfleet' ); ?></h3>
-				<p><?php esc_html_e( 'BYOC sends through your own AWS SES account — SendFleet never stores message bodies, and keeps recipients and subjects only while email logs are on (the default; you can turn them off). Managed plans send through SendFleet\'s SES with logs, webhooks and bounce handling.', 'sendfleet' ); ?></p>
+				<p><?php esc_html_e( 'BYOC sends through your own AWS SES account — SendFleet never stores message bodies, and keeps recipients and subjects only while email logs are on (the default; you can turn them off). Managed sends transactional email through SendFleet\'s SES, by approved application, with logs, webhooks and bounce handling.', 'sendfleet' ); ?></p>
 			</div>
 			<div class="sf-card">
 				<h3 class="sf-card__title"><?php esc_html_e( 'Free plan', 'sendfleet' ); ?></h3>
-				<p><?php esc_html_e( '3,000 emails a month. With a BYOC domain they go to anyone. With a Shared SES domain the Free plan is a smoke test that only reaches your own account address — enough for contact forms and admin notifications to yourself.', 'sendfleet' ); ?></p>
+				<p><?php esc_html_e( '3,000 emails a month on the Free plan; Pro ($29) includes 100,000 and Scale ($99) 1,000,000. With a BYOC domain they go to anyone. With a Shared SES domain the Free plan is a smoke test that only reaches your own account address — enough for contact forms and admin notifications to yourself.', 'sendfleet' ); ?></p>
 			</div>
 			<div class="sf-card">
 				<h3 class="sf-card__title"><?php esc_html_e( 'Nothing else to configure', 'sendfleet' ); ?></h3>

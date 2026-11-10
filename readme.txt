@@ -1,18 +1,20 @@
-=== SendFleet – Transactional Email API ===
+=== SendFleet – Email on Your Own Amazon SES ===
 Contributors: sendfleet
 Tags: email, smtp, transactional email, wp mail, amazon ses
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Send every WordPress email through SendFleet. One API key, no SMTP settings. Your own Amazon SES free for 3,000 emails a month, or ours from $5.
+Send every WordPress email through your own Amazon SES with SendFleet. One API key, no SMTP settings. Free for 3,000 emails a month.
 
 == Description ==
 
-This is the official WordPress plugin for [SendFleet](https://sendfleet.net/), a transactional email API. It sends every email your site sends through SendFleet instead of PHP `mail()` or SMTP: password resets, new-user emails, WooCommerce orders, contact form submissions, comment notifications, and anything else that calls `wp_mail()`.
+This is the official WordPress plugin for [SendFleet](https://sendfleet.net/): email on your own Amazon SES. SendFleet is a transactional email API, campaigns, signup forms and automations in one place. You keep your AWS account, your sender reputation and your data, and pay a flat monthly fee, never per contact.
+
+This plugin handles the transactional side for WordPress. It sends every email your site sends through SendFleet instead of PHP `mail()` or SMTP: password resets, new-user emails, WooCommerce orders, contact form submissions, comment notifications, and anything else that calls `wp_mail()`.
 
 **Setup is one field.** Paste your API key. The plugin checks it, reads your plan and verified sending domains from SendFleet, and picks a sender address on one of those domains automatically. There are no SMTP hosts, ports or passwords to configure.
 
@@ -20,8 +22,8 @@ This is the official WordPress plugin for [SendFleet](https://sendfleet.net/), a
 
 SendFleet has two sending modes. The plugin works the same way with both.
 
-* **BYOC (bring your own SES), recommended.** Email goes out through your own Amazon SES account, so the sender reputation is yours alone. Connect it with one click; SendFleet sets up delivery tracking, bounce protection and production access in your account for you, and never stores message bodies. Free for 3,000 emails a month, or $5 a month with 20,000 emails and 20,000 logged emails included and $0.10 per 1,000 of each after that. Amazon bills you for SES separately.
-* **Managed.** The quick way to start if your site is not on AWS yet. Verify your domain with a few DNS records and you are sending through SendFleet's own Amazon SES. Email logs, delivery webhooks and bounce and complaint handling are included. Every Managed account shares one sender reputation, so the rules are strict, and we recommend moving to BYOC for production mail when you are ready. From $5 a month for 5,000 emails.
+* **BYOC (bring your own SES), recommended.** Email goes out through your own Amazon SES account, so the sender reputation is yours alone. Connect it with one click; SendFleet sets up delivery tracking, bounce protection and production access in your account for you, and never stores the messages your site sends. Free for 3,000 emails a month; Pro and Scale are flat monthly plans. Amazon bills you for SES separately.
+* **Managed.** Vetted transactional sending through SendFleet's own Amazon SES, for sites whose AWS account is not ready yet. Apply from the SendFleet dashboard; once a person approves the application, verify your domain with a few DNS records and you are sending. Email logs, delivery webhooks and bounce and complaint handling are included. Every Managed account shares one sender reputation, so the rules are strict: every link must point to your own domain or a link domain you listed. We recommend moving to BYOC for production mail when you are ready.
 
 = What it does for you =
 
@@ -42,11 +44,12 @@ SendFleet has two sending modes. The plugin works the same way with both.
 
 The plugin is free. SendFleet plans are billed monthly, in USD:
 
-* **Free** – 3,000 emails a month, no card. On a BYOC domain they go to anyone. On a Managed domain the Free plan is a smoke test that only delivers to your own SendFleet account address.
-* **BYOC** – $5 a month with 20,000 emails and 20,000 logged emails included, then $0.10 per 1,000 emails sent and $0.10 per 1,000 emails logged, up to 1,000,000 a month under a cap you set. Sent through your own Amazon SES, which Amazon bills separately. Includes delivery tracking, email logs and webhooks.
-* **Managed Starter** – $5 a month, 5,000 emails.
-* **Managed Growth** – $15 a month, 25,000 emails.
-* **Managed Pro** – $59 a month, 100,000 emails.
+* **Free** – 3,000 emails and 1,000 contacts a month on your own Amazon SES, no card. On a Managed domain the Free plan is a smoke test that only delivers to your own SendFleet account address.
+* **Pro** – $29 a month with 100,000 emails included, then $0.10 per 1,000 up to a monthly cap you set. Unlimited contacts, delivery webhooks, automations. Email logs included.
+* **Scale** – $99 a month with 1,000,000 emails included, then $0.10 per 1,000 up to your cap. Everything in Pro, plus priority support.
+* **Managed** – $29 a month, 25,000 transactional emails through SendFleet's SES, by approved application.
+
+Transactional and marketing emails share one monthly allowance. On Free, Pro and Scale, Amazon bills its own SES charges to your AWS account.
 
 Full details are on the [SendFleet pricing page](https://sendfleet.net/pricing/).
 
@@ -147,6 +150,10 @@ All of its settings, both database tables (log and suppression list) and its sch
 
 == Changelog ==
 
+= 1.1.0 =
+* Knows SendFleet's current plans: Free, Pro, Scale and Managed. The overview, Site Health and the plan label use the new names and limits, and Scale is treated like Pro for BYOC routing and quota messages.
+* Updated descriptions: SendFleet is email on your own Amazon SES, and Managed is transactional sending by approved application.
+
 = 1.0.2 =
 * Fix: the Free plan's limit is 3,000 emails a month. 1.0.1 still measured it against 50, so the overview and Site Health warned that the limit was reached when it was not.
 * Webhooks are described as available on every paid plan, BYOC included.
@@ -158,6 +165,9 @@ All of its settings, both database tables (log and suppression list) and its sch
 * First release: routes wp_mail() through the SendFleet API (BYOC and Managed), automatic sender selection, Free plan smoke-test support, attachments, retries and queue, background sending, fallback, email log, webhooks with a local suppression list, Site Health, WP-CLI, multisite and privacy tools.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Supports SendFleet's Pro, Scale and Managed plans. No settings change.
 
 = 1.0.2 =
 Fixes a false "monthly limit reached" warning on the Free plan.

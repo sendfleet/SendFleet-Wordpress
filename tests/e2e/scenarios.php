@@ -452,7 +452,7 @@ sf_check( 'quota issue reported', in_array( 'quota', wp_list_pluck( SendFleet\St
 
 // Paid BYOC is capped too, and at its cap there is no larger plan to upgrade to.
 sf_use_key( 'bqta0001' );
-sf_check( 'paid BYOC is capped at 1,000,000', 1000000 === Account::limit(), wp_json_encode( Account::limit() ) );
+sf_check( 'Pro is capped at 2,000,000', 2000000 === Account::limit(), wp_json_encode( Account::limit() ) );
 $sendfleet_reached = wp_list_filter( SendFleet\Status::issues(), array( 'id' => 'quota_reached' ) );
 $sendfleet_reached = reset( $sendfleet_reached );
 sf_check( 'paid BYOC at its cap is pointed at support, not an upgrade', $sendfleet_reached && false !== strpos( $sendfleet_reached['message'], 'support@sendfleet.net' ) && false === strpos( $sendfleet_reached['message'], 'upgrade' ), $sendfleet_reached ? $sendfleet_reached['message'] : 'no quota_reached issue' );
